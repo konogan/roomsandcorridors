@@ -21,7 +21,7 @@ Its an uncomplete roguelike game
 - [ ] NPC
 - [ ] NPC Ai (A*, Dijkstra, ...)
 - [ ] Combat system melee
-- [ ] Combat system randed attack
+- [ ] Combat system ranged attack
 - ...
 
 ## Setup
