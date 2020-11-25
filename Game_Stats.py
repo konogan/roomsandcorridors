@@ -8,5 +8,5 @@ class GameStats():
         
     def reset_stats(self):
         self.game_active = False
-        self.score = 0
-        self.level = 1
+        
+        
