@@ -3,73 +3,96 @@
 import sys
 import pygame
 
+
 def check_events(game):
     # respond to events
     # delegate to differnet module
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            print('Merci de save')
-            sys.exit()
+            quit_game(game)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_buttons(game,mouse_x, mouse_y)
+            check_buttons(game, mouse_x, mouse_y)
         elif event.type == pygame.MOUSEMOTION:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_buttons_hover(game,mouse_x, mouse_y)
+            check_buttons_hover(game, mouse_x, mouse_y)
         elif event.type == pygame.KEYDOWN:
-            check_keydown(event,game)
+            check_keydown(event, game)
         elif event.type == pygame.KEYUP:
-            check_keyup(event,game)
+            check_keyup(event, game)
 
-  
-def check_keydown(event,game):
+
+def check_keydown(event, game):
     if event.key == pygame.K_ESCAPE:
         if game.stats.game_active:
-            game.stats.game_active = False
-        else :
-            game.stats.game_active = True
+            pause_game(game)
+        else:
+            play_game(game)
     if event.key == pygame.K_RIGHT:
         print("Right down")
     if event.key == pygame.K_LEFT:
         print("Left down")
 
-def check_keyup(event,game):
+
+def check_keyup(event, game):
     if event.key == pygame.K_RIGHT:
         print("Right up")
     if event.key == pygame.K_LEFT:
         print("Left up")
     if event.key == pygame.K_n:
-        game.new()
+        new_game(game)
     if event.key == pygame.K_l:
-        if game.save_exist:
-            game.load()
-            game.stats.game_active = True
+        load_game(game)
     if event.key == pygame.K_p:
-        game.stats.game_active = True
+        pause_game(game)
     if event.key == pygame.K_q:
-        if not game.stats.game_active:
-            sys.exit()
+        quit_game(game)
+
 
 def check_buttons(game, mouse_x, mouse_y):
     for button in game.main_menu.buttons:
         button_clicked = button.rect.collidepoint(mouse_x, mouse_y)
         if button_clicked:
             if button.id == 'play':
-                game.stats.game_active = True
+                play_game(game)
             if button.id == 'load':
-                game.load()
-                game.stats.game_active = True
+                load_game(game)
             if button.id == 'new':
-                game.new()
-                game.stats.game_active = True
+                new_game(game)
             if button.id == 'quit':
-                sys.exit()
-        
+                if not game.stats.game_active:
+                    quit_game(game)
+
+
 def check_buttons_hover(game, mouse_x, mouse_y):
     for button in game.main_menu.buttons:
         button_hover = button.rect.collidepoint(mouse_x, mouse_y)
         if button_hover:
             button.hover = True
-        else :
+        else:
             button.hover = False
-            
+
+
+def play_game(game):
+    game.stats.game_active = True
+
+
+def load_game(game):
+    if game.save_exist:
+        game.load()
+        game.stats.game_active = True
+
+
+def new_game(game):
+    game.new()
+    game.stats.game_active = True
+
+
+def pause_game(game):
+    game.stats.game_active = False
+
+
+def quit_game(game):
+    game.stats.game_active = False
+    # save ?
+    sys.exit()

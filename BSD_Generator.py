@@ -7,13 +7,14 @@ import random
 
 from Room import Room
 
+
 class BSDGenerator:
-    def __init__(self, world,threshold):
-        self.world      = world
-        self.threshold  = threshold
-        self.width      = world.grid_size[0]
-        self.height     = world.grid_size[1]
-        self.leaves     = []
+    def __init__(self, world, threshold):
+        self.world = world
+        self.threshold = threshold
+        self.width = world.grid_size[0]
+        self.height = world.grid_size[1]
+        self.leaves = []
         """ Make the map """
         self.__BSD_split(1, 1, self.height - 1, self.width - 1)
         self.__dig_rooms()
@@ -48,25 +49,27 @@ class BSDGenerator:
         self.__BSD_split(min_row, split + 1, max_row, max_col)
 
     def __dig_rooms(self):
-        room_id=0
+        room_id = 0
         for leaf in self.leaves:
-            #skip 40%
+            # skip 40%
             # if random.random() > 0.60:
             #     continue
 
-            room_id +=1
+            room_id += 1
 
-            #size of zone
+            # size of zone
             section_width = leaf[3] - leaf[1]
             section_height = leaf[2] - leaf[0]
 
-            #random reduce the size
+            # random reduce the size
             room_width = round(random.randrange(60, 100) / 100 * section_width)
-            room_height = round(random.randrange(60, 100) / 100 * section_height)
+            room_height = round(random.randrange(
+                60, 100) / 100 * section_height)
 
-            #random shift placement
+            # random shift placement
             if section_height > room_height:
-                room_y = leaf[0] + random.randrange(section_height - room_height)
+                room_y = leaf[0] + \
+                    random.randrange(section_height - room_height)
             else:
                 room_y = leaf[0]
 
@@ -75,61 +78,55 @@ class BSDGenerator:
             else:
                 room_x = leaf[1]
 
-            #append room to the world
+            # append room to the world
             #print(f"Create {room_id} : ({room_x}, {room_y}) w={room_width} h={room_height} ")
-            room = Room(room_x, room_y,room_width,room_height,room_id)
+            room = Room(room_x, room_y, room_width, room_height, room_id)
             self.world.rooms.append(room)
-            
-            #append room to the grid
+
+            # append room to the grid
             for r in range(room_y, room_y + room_height):
                 for c in range(room_x, room_x + room_width):
-                    try:
-                        self.world.grid[c][r].belong_to_room(room_id)
-                    except :
-                        pass
-    
-    def __get_center_of_leaf(self,leaf):
+                    self.world.grid[c][r].belong_to_room(room_id)
+
+    def __get_center_of_leaf(self, leaf):
         section_width = leaf[3] - leaf[1]
         section_height = leaf[2] - leaf[0]
-        return (int(leaf[1] + section_width//2),int(leaf[0] + section_height//2))
+        return (int(leaf[1] + section_width//2), int(leaf[0] + section_height//2))
 
-    def __dig_coridors(self,leaf1,leaf2):
+    def __dig_coridors(self, leaf1, leaf2):
         center1 = self.__get_center_of_leaf(leaf1)
         center2 = self.__get_center_of_leaf(leaf2)
-        #print(center1,center2)
-        
-        #draw Horizontal
+        # print(center1,center2)
+
+        # draw Horizontal
         if center1[0] != center2[0]:
             y = center1[1]
             if center1[0] < center2[0]:
                 start = center1[0]
-                end = center2[0] +1
+                end = center2[0] + 1
             else:
                 start = center2[0]
                 end = center1[0]
-            
-            for x in range(start,end):
+
+            for x in range(start, end):
                 if self.world.grid[x][y].is_free:
                     self.world.grid[x][y].set_corridor()
-        
-        #draw Vertical
+
+        # draw Vertical
         if center1[1] != center2[1]:
             x = center2[0]
             if center1[1] < center2[1]:
                 start = center1[1]
-                end = center2[1] +1
+                end = center2[1] + 1
             else:
                 start = center2[1]
                 end = center1[1]
-            
-            for y in range(start,end):
+
+            for y in range(start, end):
                 if self.world.grid[x][y].is_free:
                     self.world.grid[x][y].set_corridor()
-        
-        
+
     def __connect_rooms(self):
         for i, _ in enumerate(self.leaves):
             if i != 0:
-                self.__dig_coridors(self.leaves[i-1],self.leaves[i])
-            
-            
+                self.__dig_coridors(self.leaves[i-1], self.leaves[i])
