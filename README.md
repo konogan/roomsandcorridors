@@ -11,8 +11,8 @@ Its an uncomplete roguelike game
 - [ ] Generate a cave with cellular automata
 - [x] Implement a main menu with "hoverable" buttons
 - [x] Capture key and mouse events
-- [ ] Save generated world
-- [ ] Load generated world
+- [x] Save generated world
+- [x] Load generated world
 - [ ] Add a player
 - [ ] Implement a "camera" system that follows the player
 - [ ] Line of sight / fog of war

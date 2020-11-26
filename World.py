@@ -4,7 +4,7 @@
 # pylint: disable=missing-function-docstring
 
 import World_Functions  as wf
-
+from Room import Room
 
 class World():
 
@@ -18,9 +18,9 @@ class World():
         )
         self.grid = None
         self.rooms = []
-        self.init()
 
-    def init(self):
+    def new(self):
+        #empty elements
         self.grid = None
         self.rooms = []
 
@@ -41,6 +41,28 @@ class World():
         #place ennemies
         
         #init hero
+
+    def toJson(self):
+        export = {}
+        export["rooms"]=[]
+        for room in self.rooms:
+            export["rooms"].append(room.toJson())
+        export["grid"]=[]
+        for i in range(self.grid_size[0]):
+            for j in range(self.grid_size[1]):
+                export["grid"].append(self.grid[i][j].toJson())
+        
+        return export
+    
+    def fromJson(self,worldjson):
+        #populate the rooms
+        self.rooms = []
+        for r in worldjson['rooms']:
+            self.rooms.append(Room(r['x'],r['y'],r['w'],r['h'],r['i']))
+        # populate the grid
+        self.grid = wf.make_grid(self.grid_size)
+        for g in worldjson['grid']:
+            self.grid[g['x']][g['y']].fromJson(g)
 
     def update(self):
         #update world content

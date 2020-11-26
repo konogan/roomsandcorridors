@@ -16,9 +16,6 @@ class Cell():
         self.is_free = True
         self.belongs_to = None
         self.type = None
- 
-    def __str__(self):
-        return str(self.__class__) + ": " + str(self.__dict__)
     
     def belong_to_room(self,room_id):
         self.is_free = False
@@ -35,8 +32,22 @@ class Cell():
     
     def set_wall(self):
         self.type = "WALL"
+    
+    def toJson(self):
+        export = {}
+        export['x'] = self.coord.x
+        export['y'] = self.coord.y
+        export['f']= self.is_free
+        export['b']= self.belongs_to
+        export['t']= self.type
+        return export
         
-    def render(self,screen,tile_size):
+    def fromJson(self,json_data):
+        self.is_free = json_data['f']
+        self.belongs_to = json_data['b']
+        self.type = json_data['t']
+    
+    def render(self,surface,tile_size):
         if self.type=="WALL":
             cell_color = mycolors.GREY
         elif self.type=="ROOM":
@@ -54,4 +65,4 @@ class Cell():
             tile_size,
             tile_size
         )
-        pygame.draw.rect(screen, cell_color,rect)
+        pygame.draw.rect(surface, cell_color,rect)

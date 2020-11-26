@@ -3,6 +3,8 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 
+import json
+import os.path
 import pygame
 
 from Settings import Settings
@@ -27,18 +29,28 @@ class Game:
         #game stats
         self.stats = GameStats(self.settings)
         
-        self.world = None
-        self.main_menu = MainMenu(self.menu_surface)
+        self.save_exist = os.path.isfile('world.save')
+        
+        #init
+        self.world = World(self.settings, self.world_surface)
+        self.main_menu = MainMenu(self.menu_surface,self.save_exist )
         
         
     def new(self):
         print("Generate a new world")
-        self.world = World(self.settings, self.world_surface)
+        self.world.new() 
+        self.save()
+        self.stats.game_active = True
     
     def load(self):
-        print('load')
+        with open('world.save') as json_file:
+            worldjson = json.load(json_file)
+            self.world.fromJson(worldjson)
     
     def save(self):
+        worldjson = self.world.toJson()
+        with open('world.save', 'w') as outfile:
+            json.dump(worldjson, outfile,indent =4)
         print("save")
     
     def run(self):

@@ -17,6 +17,15 @@ class Room():
         self.room_id        = room_id
         self.is_reachable   = False
     
+    def toJson(self):
+        export = {}
+        export['x'] = self.coord.x
+        export['y'] = self.coord.y
+        export['w'] = self.width
+        export['h'] = self.height
+        export['i'] = self.room_id
+        return export
+    
     def render(self,screen,tile_size):
         cell_font = pygame.font.SysFont('arial', 15)
         number = cell_font.render( "{}".format(self.room_id), True, (0,0,255))

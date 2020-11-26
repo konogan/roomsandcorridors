@@ -6,20 +6,22 @@
 from Button import Button
 
 class MainMenu :
-    def __init__(self,menu_surface):
+    def __init__(self,menu_surface,save_exist):
         self.surface = menu_surface
+        self.save_exist = save_exist
         self.surface.fill((55,155,255))
         self.buttons = []
         self.__init_buttons()
         
-    def __init_buttons(self):    
-        play_button = Button("play", self.surface, "(P)lay current world",-200)
-        self.buttons.append(play_button)
+    def __init_buttons(self):
+        if self.save_exist :
+            play_button = Button("load", self.surface, "(l)oad world",-200)
+            self.buttons.append(play_button)
 
-        new_button = Button("new", self.surface, "(N)ew world",-140)
+        new_button = Button("new", self.surface, "(n)ew world",-140)
         self.buttons.append(new_button)
     
-        quit_button = Button("quit", self.surface, "(Q)uit",-80)
+        quit_button = Button("quit", self.surface, "(q)uit",-80)
         self.buttons.append(quit_button)
     
     def render(self):

@@ -40,6 +40,10 @@ def check_keyup(event,game):
         print("Left up")
     if event.key == pygame.K_n:
         game.new()
+    if event.key == pygame.K_l:
+        if game.save_exist:
+            game.load()
+            game.stats.game_active = True
     if event.key == pygame.K_p:
         game.stats.game_active = True
     if event.key == pygame.K_q:
@@ -51,6 +55,9 @@ def check_buttons(game, mouse_x, mouse_y):
         button_clicked = button.rect.collidepoint(mouse_x, mouse_y)
         if button_clicked:
             if button.id == 'play':
+                game.stats.game_active = True
+            if button.id == 'load':
+                game.load()
                 game.stats.game_active = True
             if button.id == 'new':
                 game.new()
