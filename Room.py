@@ -18,6 +18,9 @@ class Room():
         self.room_id = room_id
         self.is_reachable = False
 
+    def get_center(self):
+        return self.coord.x + int(self.width/2),self.coord.y + int(self.height/2)
+    
     def toJson(self):
         export = {}
         export['x'] = self.coord.x

@@ -26,16 +26,14 @@ class Game:
         # render surfaces
         self.menu_surface = pygame.Surface(screen_size)
         self.world_surface = pygame.Surface(screen_size)
-        self.player_surface = pygame.Surface(
-            (self.settings.tile_size, self.settings.tile_size))
-
+        
         # game stats
         self.stats = GameStats(self.settings)
 
         self.save_exist = os.path.isfile('world.save')
 
         # init
-        self.world = World(self.settings, self.world_surface)
+        self.world = World(self.settings, self.stats, self.world_surface)
         self.main_menu = MainMenu(self.menu_surface, self.save_exist)
 
     def new(self):
@@ -60,6 +58,8 @@ class Game:
             # Watch for keyboard and mouse
             el.check_events(self)
 
+            self.world.update()
+            
             if self.stats.game_active:
                 # world.update()
                 self.world.render()

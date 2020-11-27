@@ -5,12 +5,14 @@
 
 import World_Functions as wf
 from Room import Room
+from Player import Player
 
 
 class World():
 
-    def __init__(self, settings, screen):
+    def __init__(self, settings, stats, screen):
         self.screen = screen
+        self.stats = stats
         self.settings = settings
         self.screen_rect = screen.get_rect()
         self.grid_size = (
@@ -19,6 +21,7 @@ class World():
         )
         self.grid = None
         self.rooms = []
+        self.player = None
 
     def new(self):
         # empty elements
@@ -41,7 +44,9 @@ class World():
 
         # place ennemies
 
-        # init hero
+        # init player
+        spawn = self.rooms[0].get_center()
+        self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
 
     def toJson(self):
         export = {}
@@ -52,7 +57,6 @@ class World():
         for i in range(self.grid_size[0]):
             for j in range(self.grid_size[1]):
                 export["grid"].append(self.grid[i][j].toJson())
-
         return export
 
     def fromJson(self, worldjson):
@@ -65,13 +69,31 @@ class World():
         for g in worldjson['grid']:
             self.grid[g['x']][g['y']].fromJson(g)
 
+        # for the moment the player respawn in the first room
+        spawn = self.rooms[0].get_center()
+        self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
+
+    def move_player_intent(self, direction):
+        target_cell = self.grid[self.player.coord.x +
+                                direction[0]][self.player.coord.y+direction[1]]
+        
+        if self.player.current_room != target_cell.belongs_to:
+            if target_cell.belongs_to == 0:
+                self.stats.add_message('you enter a corridor')
+            else:
+                self.stats.add_message('you enter a room')
+
+        if target_cell.is_walkable():
+            self.stats.player_move(direction)
+            self.player.move(direction, target_cell.belongs_to)
+        else:
+            self.stats.player_move(None)
+
     def update(self):
         # update world content
         pass
 
     def render(self):
-        # render the world
-
         # iterate over each cell and render it
         for i in range(self.grid_size[0]):
             for j in range(self.grid_size[1]):
@@ -80,3 +102,6 @@ class World():
         # iterate over each room and render it
         for i, _ in enumerate(self.rooms):
             self.rooms[i].render(self.screen, self.settings.tile_size)
+
+        # render the player
+        self.player.render(self.screen, self.settings.tile_size)

@@ -13,7 +13,7 @@ Its an uncomplete roguelike game
 - [x] Capture key and mouse events
 - [x] Save generated world
 - [x] Load generated world
-- [ ] Add a player
+- [x] Add a player
 - [ ] Implement a "camera" system that follows the player
 - [ ] Line of sight / fog of war
 - [ ] Dynamic lightning
