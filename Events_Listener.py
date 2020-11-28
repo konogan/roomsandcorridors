@@ -32,13 +32,17 @@ def check_keydown(event, game):
 
 def check_keyup(event, game):
     if event.key == pygame.K_RIGHT:
-        game.world.move_player_intent((1,0))
+        game.new_turn()
+        game.world.move_player_intent((1, 0))
     if event.key == pygame.K_LEFT:
-        game.world.move_player_intent((-1,0))
+        game.new_turn()
+        game.world.move_player_intent((-1, 0))
     if event.key == pygame.K_UP:
-        game.world.move_player_intent((0,-1))
+        game.new_turn()
+        game.world.move_player_intent((0, -1))
     if event.key == pygame.K_DOWN:
-        game.world.move_player_intent((0,1))
+        game.new_turn()
+        game.world.move_player_intent((0, 1))
     if event.key == pygame.K_n:
         new_game(game)
     if event.key == pygame.K_l:

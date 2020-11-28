@@ -15,10 +15,7 @@ class World():
         self.stats = stats
         self.settings = settings
         self.screen_rect = screen.get_rect()
-        self.grid_size = (
-            int(self.settings.screen_width / self.settings.tile_size),
-            int(self.settings.screen_height / self.settings.tile_size)
-        )
+        self.grid_size = ( self.settings.grid_width , self.settings.grid_height)
         self.grid = None
         self.rooms = []
         self.player = None
@@ -79,9 +76,9 @@ class World():
         
         if self.player.current_room != target_cell.belongs_to:
             if target_cell.belongs_to == 0:
-                self.stats.add_message('you enter a corridor')
+                self.stats.add_message('You enter a corridor')
             else:
-                self.stats.add_message('you enter a room')
+                self.stats.add_message('You enter a room')
 
         if target_cell.is_walkable():
             self.stats.player_move(direction)
@@ -100,8 +97,8 @@ class World():
                 self.grid[i][j].render(self.screen, self.settings.tile_size)
 
         # iterate over each room and render it
-        for i, _ in enumerate(self.rooms):
-            self.rooms[i].render(self.screen, self.settings.tile_size)
+        # for i, _ in enumerate(self.rooms):
+        #     self.rooms[i].render(self.screen, self.settings.tile_size)
 
         # render the player
         self.player.render(self.screen, self.settings.tile_size)
