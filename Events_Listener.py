@@ -49,6 +49,8 @@ def check_keyup(event, game):
         load_game(game)
     if event.key == pygame.K_p:
         pause_game(game)
+    if event.key == pygame.K_g:
+        game.switch_debug()
     if event.key == pygame.K_q:
         quit_game(game)
 

@@ -20,6 +20,7 @@ class World():
         self.rooms = []
         self.player = None
         self.camera = camera
+        self.debug=False
 
     def new(self):
         # empty elements
@@ -45,7 +46,7 @@ class World():
         # init player
         spawn = self.rooms[0].get_center()
         self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
-        self.camera.look_at(self.player.coord.x,self.player.coord.x)
+        self.camera.look_at(self.player.coord.x, self.player.coord.x)
 
     def toJson(self):
         export = {}
@@ -71,7 +72,7 @@ class World():
         # for the moment the player respawn in the first room
         spawn = self.rooms[0].get_center()
         self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
-        self.camera.look_at(self.player.coord.x,self.player.coord.y)
+        self.camera.look_at(self.player.coord.x, self.player.coord.y)
 
     def move_player_intent(self, direction):
         target_cell = self.grid[self.player.coord.x +
@@ -86,11 +87,11 @@ class World():
         if target_cell.is_walkable():
             self.stats.player_move(direction)
             self.player.move(direction, target_cell.belongs_to)
-            
+
             # check the player postion against the camera viewport
             # move the center look if necessary
-            self.camera.look_at(self.player.coord.x,self.player.coord.y)
-            
+            self.camera.look_at(self.player.coord.x, self.player.coord.y)
+
         else:
             self.stats.player_move(None)
 
@@ -100,17 +101,20 @@ class World():
 
     def render(self):
         self.surface.fill((0, 0, 0))
-        offset = (self.camera.top_left_x,self.camera.top_left_y)
+        offset = (self.camera.top_left_x, self.camera.top_left_y)
         # iterate over all the cells covered by the camera
         # and offest them
         for coord_x in range(self.camera.top_left_x, self.camera.bottom_right_x+1):
             for coord_y in range(self.camera.top_left_y, self.camera.bottom_right_y+1):
                 if self.grid[coord_x][coord_y]:
-                    self.grid[coord_x][coord_y].render(self.surface, self.settings.tile_size,offset)
-                
+                    self.grid[coord_x][coord_y].render(
+                        self.surface, self.settings.tile_size, offset)
+
         # iterate over each room and render it
-        # for i, _ in enumerate(self.rooms):
-        #     self.rooms[i].render(self.surface, self.settings.tile_size)
+        if self.debug:
+            for i, _ in enumerate(self.rooms):
+                self.rooms[i].render(
+                    self.surface, self.settings.tile_size, offset)
 
         # render the player
-        self.player.render(self.surface, self.settings.tile_size,offset)
+        self.player.render(self.surface, self.settings.tile_size, offset)

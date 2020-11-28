@@ -57,6 +57,13 @@ class Game:
         self.need_redraw = True
         self.turns += 1
 
+    def switch_debug(self):
+        self.need_redraw = True
+        if self.world.debug:
+            self.world.debug = False
+        else:
+            self.world.debug = True
+    
     def new(self):
         print("Generate a new world")
         self.world.new()
