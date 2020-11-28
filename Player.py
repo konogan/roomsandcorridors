@@ -31,10 +31,10 @@ class Player():
             self.coord.x + direction[0],
             self.coord.y + direction[1])
 
-    def render(self, surface, tile_size):
+    def render(self, surface, tile_size,offset=(0,0)):
         rect = pygame.Rect(
-            self.coord.x*tile_size,
-            self.coord.y*tile_size,
+            (self.coord.x-offset[0])*tile_size,
+            (self.coord.y-offset[1])*tile_size,
             tile_size,
             tile_size
         )

@@ -53,7 +53,7 @@ class Cell():
         self.belongs_to = json_data['b']
         self.type = json_data['t']
 
-    def render(self, surface, tile_size):
+    def render(self, surface, tile_size,offset=(0,0)):
         if self.type == "WALL":
             cell_color = mycolors.GREY
         elif self.type == "ROOM":
@@ -66,8 +66,8 @@ class Cell():
             cell_color = mycolors.BLACK
 
         rect = pygame.Rect(
-            self.coord.x*tile_size,
-            self.coord.y*tile_size,
+            (self.coord.x-offset[0])*tile_size,
+            (self.coord.y-offset[1])*tile_size,
             tile_size,
             tile_size
         )

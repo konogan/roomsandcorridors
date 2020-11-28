@@ -8,5 +8,3 @@ class Settings():
         self.grid_width = 150
         self.grid_height = 150
         self.tile_size = 16
-        self.minimum_room_size = 3
-        self.maximum_room_size = 15

@@ -9,6 +9,7 @@ import pygame
 
 from Settings import Settings
 from Game_Stats import GameStats
+from Camera import Camera
 from World import World
 from MainMenu import MainMenu
 import Events_Listener as el
@@ -32,6 +33,9 @@ class Game:
         game_icon = pygame.image.load('assets/logo.png')
         pygame.display.set_icon(game_icon)
 
+        # camera
+        self.camera = Camera(self)
+
         # render surfaces
         self.menu_surface = pygame.Surface(screen_size)     # loading screen
         self.world_surface = pygame.Surface(world_size)     # gamescreen
@@ -43,15 +47,16 @@ class Game:
         self.save_exist = os.path.isfile('world.save')
 
         # init
-        self.world = World(self.settings, self.stats, self.world_surface)
+        self.world = World(self.settings, self.stats,
+                           self.world_surface, self.camera)
         self.main_menu = MainMenu(self.menu_surface, self.save_exist)
         self.turns = 0
         self.need_redraw = True
 
     def new_turn(self):
         self.need_redraw = True
-        self.turns +=1
-    
+        self.turns += 1
+
     def new(self):
         print("Generate a new world")
         self.world.new()
@@ -71,7 +76,6 @@ class Game:
 
     def run(self):
         clock = pygame.time.Clock()
-
         while True:
             # Watch for keyboard and mouse
             el.check_events(self)
@@ -89,9 +93,9 @@ class Game:
                     # display
                     self.screen.blit(self.world_surface, (0, 0))
                     self.screen.blit(self.ui_surface, (self.settings.screen_width -
-                                                    self.settings.ui_width, 0))
+                                                       self.settings.ui_width, 0))
                     self.need_redraw = False
-                    
+
             else:
                 self.screen.blit(self.main_menu.render(), (0, 0))
                 self.need_redraw = True
