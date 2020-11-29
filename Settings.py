@@ -7,4 +7,4 @@ class Settings():
         self.ui_width = 400
         self.grid_width = 150
         self.grid_height = 150
-        self.tile_size = 16
+        self.tile_size = 32
