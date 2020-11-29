@@ -21,6 +21,8 @@ class World():
         self.player = None
         self.camera = camera
         self.debug = False
+        self.mouse_x = None
+        self.mouse_y = None
 
     def new(self):
         # empty elements
@@ -56,7 +58,8 @@ class World():
         export["grid"] = []
         for i in range(self.grid_size[0]):
             for j in range(self.grid_size[1]):
-                export["grid"].append(self.grid[i][j].toJson())
+                if self.grid[i][j].type:
+                    export["grid"].append(self.grid[i][j].toJson())
         return export
 
     def fromJson(self, worldjson):
@@ -78,13 +81,12 @@ class World():
         target_cell = self.grid[self.player.coord.x +
                                 direction[0]][self.player.coord.y+direction[1]]
 
-        if self.player.current_room != target_cell.belongs_to:
-            if target_cell.belongs_to == 0:
-                self.stats.add_message('You enter a corridor')
-            else:
-                self.stats.add_message('You enter a room')
-
         if target_cell.is_walkable():
+            if self.player.current_room != target_cell.belongs_to:
+                if target_cell.belongs_to == 0:
+                    self.stats.add_message('You enter a corridor')
+                else:
+                    self.stats.add_message('You enter a room')
             self.stats.player_move(direction)
             self.player.move(direction, target_cell.belongs_to)
 
@@ -94,6 +96,11 @@ class World():
 
         else:
             self.stats.player_move(None)
+
+    def set_mouse_click(self, mouse_x, mouse_y):
+        self.mouse_x = mouse_x
+        self.mouse_y = mouse_y
+        print(mouse_x, mouse_y)
 
     def update(self):
         # update world content
@@ -112,7 +119,7 @@ class World():
             for coord_y in range(self.camera.top_left_y, self.camera.bottom_right_y+1):
                 if self.grid[coord_x][coord_y]:
                     self.grid[coord_x][coord_y].render(
-                        self.surface, self.settings.tile_size, offset,self.debug)
+                        self.surface, self.settings.tile_size, offset, self.debug)
 
         # iterate over each room and render it
         if self.debug:

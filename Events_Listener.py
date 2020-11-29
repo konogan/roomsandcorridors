@@ -12,6 +12,7 @@ def check_events(game):
             quit_game(game)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
+            game.world.set_mouse_click(mouse_x, mouse_y)
             check_buttons(game, mouse_x, mouse_y)
         elif event.type == pygame.MOUSEMOTION:
             mouse_x, mouse_y = pygame.mouse.get_pos()
