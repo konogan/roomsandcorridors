@@ -16,7 +16,8 @@ Its an uncomplete roguelike game
 - [x] Add a player
 - [x] Implement a "camera" system that follows the player
 - [x] Fog of war
-- [ ] Dynamic lightning
+- [ ] Add graphic tileset
+- [ ] Dynamic lighting
 - [x] Line of sight
 - [ ] Items
 - [ ] Inventory management
