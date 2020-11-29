@@ -63,7 +63,7 @@ class Game:
             self.world.debug = False
         else:
             self.world.debug = True
-    
+
     def new(self):
         print("Generate a new world")
         self.world.new()
@@ -87,13 +87,15 @@ class Game:
             # Watch for keyboard and mouse
             el.check_events(self)
 
-            self.world.update()
-
             if self.stats.game_active:
-                # world.update()
+                self.world.update()
 
                 if self.need_redraw:
+
+                    self.world.update_fov(self.turns)
+
                     # render
+
                     self.world.render()
                     self.stats.render()
 

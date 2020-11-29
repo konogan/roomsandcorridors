@@ -20,7 +20,7 @@ class World():
         self.rooms = []
         self.player = None
         self.camera = camera
-        self.debug=False
+        self.debug = False
 
     def new(self):
         # empty elements
@@ -99,6 +99,10 @@ class World():
         # update world content
         pass
 
+    def update_fov(self, current_turn):
+        # update field of view of the player
+        wf.update_fov(self, current_turn)
+
     def render(self):
         self.surface.fill((0, 0, 0))
         offset = (self.camera.top_left_x, self.camera.top_left_y)
@@ -108,7 +112,7 @@ class World():
             for coord_y in range(self.camera.top_left_y, self.camera.bottom_right_y+1):
                 if self.grid[coord_x][coord_y]:
                     self.grid[coord_x][coord_y].render(
-                        self.surface, self.settings.tile_size, offset)
+                        self.surface, self.settings.tile_size, offset,self.debug)
 
         # iterate over each room and render it
         if self.debug:

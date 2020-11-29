@@ -14,9 +14,11 @@ Its an uncomplete roguelike game
 - [x] Save generated world
 - [x] Load generated world
 - [x] Add a player
-- [ ] Implement a "camera" system that follows the player
-- [ ] Line of sight / fog of war
+- [x] Implement a "camera" system that follows the player
+- [x] Fog of war
 - [ ] Dynamic lightning
+- [x] Line of sight
+- [ ] Items
 - [ ] Inventory management
 - [ ] NPC
 - [ ] NPC Ai (A*, Dijkstra, ...)
