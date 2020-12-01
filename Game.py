@@ -7,8 +7,8 @@ import json
 import os.path
 import pygame
 
-from Game_stats import GameStats
-import Events_listener
+from Messages import Messages
+import Events_listeners
 
 from Settings import Settings
 from Constants import States
@@ -45,7 +45,7 @@ class Game:
         self.ui_surface = pygame.Surface(ui_size)           # ui bar
 
         # game stats
-        self.stats = GameStats(self.settings, self.ui_surface)
+        self.stats = Messages(self.settings, self.ui_surface)
 
         self.save_exist = os.path.isfile('world.save')
         self.state = States.INIT
@@ -89,7 +89,7 @@ class Game:
         clock = pygame.time.Clock()
         while True:
             # Watch for keyboard and mouse
-            Events_listener.check_events(self)
+            Events_listeners.check_events(self)
 
             if self.state == States.PLAY:
 
@@ -100,7 +100,6 @@ class Game:
                     self.world.update_fov(self.turns)
 
                     # render
-
                     self.world.render()
                     self.stats.render()
 

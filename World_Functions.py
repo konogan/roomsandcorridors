@@ -23,7 +23,7 @@ def make_grid(grid_size):
 
 
 def randomize_rooms(world):
-    BSDGenerator(world, 15)
+    BSDGenerator(world, 12)
 
 
 def build_walls(world):

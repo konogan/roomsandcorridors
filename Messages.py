@@ -6,7 +6,7 @@
 import pygame
 
 
-class GameStats():
+class Messages():
     def __init__(self, settings, surface):
         self.settings = settings
         self.messages = []
