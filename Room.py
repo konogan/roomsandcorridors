@@ -6,7 +6,7 @@
 
 import pygame
 
-from Constants import Coord
+from Constants import Coord, My_colors
 
 
 class Room():
@@ -30,8 +30,9 @@ class Room():
         return export
 
     def render(self, screen, tile_size, offset=(0, 0)):
-        cell_font = pygame.font.SysFont('arial', 15)
-        number = cell_font.render("{}".format(self.room_id), True, (0, 0, 255))
+        cell_font = pygame.font.SysFont('arial', 18)
+        number = cell_font.render("{}".format(
+            self.room_id), True, My_colors.RED.value)
         rect = pygame.Rect(
             (self.coord.x-offset[0])*tile_size,
             (self.coord.y-offset[1])*tile_size,

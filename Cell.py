@@ -76,46 +76,59 @@ class Cell():
         self.was_discovered = json_data['d']
         self.last_time_was_seen = json_data['s']
 
-    def render(self, surface, tile_size, offset=(0, 0), debug=False):
+    def render(self, world_surface, tile_size, offset=(0, 0), debug=False):
+        # only render if necessary
+        if self.visibility or self.was_discovered:
 
-        if self.type == "WALL":
-            cell_color = My_colors.GREY
-            cell_color_in_memory = My_colors.GREY
-        elif self.type == "ROOM":
-            cell_color = My_colors.WHITE
-            cell_color_in_memory = My_colors.GREY
-        elif self.type == "CORRIDOR":
-            cell_color = My_colors.WHITE
-            cell_color_in_memory = My_colors.GREY
-        elif self.type == "DOOR":
-            cell_color = My_colors.GREEN
-            cell_color_in_memory = My_colors.GREY
-        else:
-            cell_color = My_colors.BLACK
+            local_surface = pygame.Surface((tile_size, tile_size))
+            local_rect = pygame.Rect(0, 0, tile_size, tile_size)
 
-        
-        
-        rect = pygame.Rect(
-            (self.coord.x-offset[0])*tile_size,
-            (self.coord.y-offset[1])*tile_size,
-            tile_size,
-            tile_size
-        )
-
-        if self.visibility:
-            pygame.draw.rect(surface, cell_color.value, rect)
-        else:
-            if self.was_discovered:
-                pygame.draw.rect(surface, cell_color_in_memory.value, rect)
-
-        if debug and self.visibility:
-            cell_font = pygame.font.SysFont('arial', 15)
-            number = cell_font.render("{}".format(
-                self.distance), True, (0, 0, 255))
-
-            rect = pygame.Rect(
+            world_rect = pygame.Rect(
                 (self.coord.x-offset[0])*tile_size,
                 (self.coord.y-offset[1])*tile_size,
                 tile_size,
-                tile_size)
-            surface.blit(number, rect)
+                tile_size
+            )
+
+            # define style based on type
+            if self.type == "WALL":
+                cell_color = My_colors.GREY
+                cell_color_in_memory = My_colors.GREY
+            elif self.type == "ROOM":
+                cell_color = My_colors.WHITE
+                cell_color_in_memory = My_colors.GREY
+            elif self.type == "CORRIDOR":
+                cell_color = My_colors.WHITE
+                cell_color_in_memory = My_colors.GREY
+            elif self.type == "DOOR":
+                cell_color = My_colors.GREEN
+                cell_color_in_memory = My_colors.GREY
+            else:
+                cell_color = My_colors.BLACK
+
+            # drawing local cell
+            if self.visibility:
+                pygame.draw.rect(local_surface, cell_color.value, local_rect)
+            else:
+                if self.was_discovered:
+                    pygame.draw.rect(
+                        local_surface, cell_color_in_memory.value, local_rect)
+
+            if debug and self.visibility:
+                cell_font = pygame.font.SysFont('arial', 15)
+                number = cell_font.render("{}".format(
+                    self.distance), True, (0, 0, 255))
+
+                local_surface.blit(number, local_rect)
+
+            # alpha pass based on distance from player
+            # just for test
+            # need to be placed in a lighting pass
+            # local_surface_light = pygame.Surface(
+            #     (tile_size, tile_size), pygame.SRCALPHA)
+            # pygame.draw.rect(local_surface_light, (0,0,0,self.distance * 10), local_rect)
+            # local_surface.blit(local_surface_light, local_rect)
+
+
+            # append local cell in world surface
+            world_surface.blit(local_surface, world_rect)
