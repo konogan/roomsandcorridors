@@ -1,7 +1,11 @@
 # encoding: utf-8
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
 
 import sys
 import pygame
+from Constants import States
 
 
 def check_events(game):
@@ -25,7 +29,7 @@ def check_events(game):
 
 def check_keydown(event, game):
     if event.key == pygame.K_ESCAPE:
-        if game.stats.game_active:
+        if game.state == States.PLAY:
             pause_game(game)
         else:
             play_game(game)
@@ -67,8 +71,7 @@ def check_buttons(game, mouse_x, mouse_y):
             if button.id == 'new':
                 new_game(game)
             if button.id == 'quit':
-                if not game.stats.game_active:
-                    quit_game(game)
+                quit_game(game)
 
 
 def check_buttons_hover(game, mouse_x, mouse_y):
@@ -81,25 +84,27 @@ def check_buttons_hover(game, mouse_x, mouse_y):
 
 
 def play_game(game):
-    game.stats.game_active = True
+    game.state = States.PLAY
 
 
 def load_game(game):
+    game.state = States.LOAD
     if game.save_exist:
         game.load()
-        game.stats.game_active = True
+        game.state = States.PLAY
 
 
 def new_game(game):
     game.new()
-    game.stats.game_active = True
+    game.state = States.PLAY
 
 
 def pause_game(game):
-    game.stats.game_active = False
+    game.state = States.MENU
 
 
 def quit_game(game):
-    game.stats.game_active = False
-    # save ?
-    sys.exit()
+    if game.state == States.MENU:
+        sys.exit()
+    else:
+        game.state = States.MENU

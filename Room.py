@@ -3,11 +3,10 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 
-from collections import namedtuple
 
 import pygame
 
-Coord = namedtuple('Coord', 'x y')
+from Constants import Coord
 
 
 class Room():
@@ -21,7 +20,7 @@ class Room():
     def get_center(self):
         return self.coord.x + int(self.width/2), self.coord.y + int(self.height/2)
 
-    def toJson(self):
+    def to_json(self):
         export = {}
         export['x'] = self.coord.x
         export['y'] = self.coord.y

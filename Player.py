@@ -3,10 +3,9 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 
-from collections import namedtuple
 import pygame
 
-Coord = namedtuple('Coord', 'x y')
+from Constants import Coord, My_colors
 
 
 class Player():
@@ -38,4 +37,4 @@ class Player():
             tile_size,
             tile_size
         )
-        pygame.draw.rect(surface, (160, 32, 240), rect)
+        pygame.draw.rect(surface, My_colors.PLAYER.value, rect)

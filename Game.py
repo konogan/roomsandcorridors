@@ -7,12 +7,14 @@ import json
 import os.path
 import pygame
 
+from Game_stats import GameStats
+import Events_listener
+
 from Settings import Settings
-from Game_Stats import GameStats
+from Constants import States
 from Camera import Camera
 from World import World
 from MainMenu import MainMenu
-import Events_Listener as el
 
 pygame.init()
 
@@ -20,6 +22,7 @@ pygame.init()
 class Game:
     def __init__(self):
         self.settings = Settings()
+        self.state = States.LOAD
         screen_size = (self.settings.screen_width, self.settings.screen_height)
         world_size = (self.settings.screen_width -
                       self.settings.ui_width, self.settings.screen_height)
@@ -45,13 +48,14 @@ class Game:
         self.stats = GameStats(self.settings, self.ui_surface)
 
         self.save_exist = os.path.isfile('world.save')
-
+        self.state = States.INIT
         # init
         self.world = World(self.settings, self.stats,
                            self.world_surface, self.camera)
         self.main_menu = MainMenu(self.menu_surface, self.save_exist)
         self.turns = 0
         self.need_redraw = True
+        self.state = States.MENU
 
     def new_turn(self):
         self.need_redraw = True
@@ -69,15 +73,15 @@ class Game:
         self.world.new()
         self.save()
         self.need_redraw = True
-        self.stats.game_active = True
 
     def load(self):
         with open('world.save') as json_file:
             worldjson = json.load(json_file)
-            self.world.fromJson(worldjson)
+            self.world.from_json(worldjson)
+        
 
     def save(self):
-        worldjson = self.world.toJson()
+        worldjson = self.world.to_json()
         with open('world.save', 'w') as outfile:
             json.dump(worldjson, outfile)
 
@@ -85,9 +89,10 @@ class Game:
         clock = pygame.time.Clock()
         while True:
             # Watch for keyboard and mouse
-            el.check_events(self)
+            Events_listener.check_events(self)
 
-            if self.stats.game_active:
+            if self.state == States.PLAY:
+
                 self.world.update()
 
                 if self.need_redraw:
@@ -105,7 +110,10 @@ class Game:
                                                        self.settings.ui_width, 0))
                     self.need_redraw = False
 
-            else:
+            if self.state == States.ITEM:
+                print("Inventory management")
+
+            if self.state == States.MENU:
                 self.screen.blit(self.main_menu.render(), (0, 0))
                 self.need_redraw = True
 

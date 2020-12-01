@@ -50,19 +50,19 @@ class World():
         self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
         self.camera.look_at(self.player.coord.x, self.player.coord.x)
 
-    def toJson(self):
+    def to_json(self):
         export = {}
         export["rooms"] = []
         for room in self.rooms:
-            export["rooms"].append(room.toJson())
+            export["rooms"].append(room.to_json())
         export["grid"] = []
         for i in range(self.grid_size[0]):
             for j in range(self.grid_size[1]):
                 if self.grid[i][j].type:
-                    export["grid"].append(self.grid[i][j].toJson())
+                    export["grid"].append(self.grid[i][j].to_json())
         return export
 
-    def fromJson(self, worldjson):
+    def from_json(self, worldjson):
         # populate the rooms
         self.rooms = []
         for r in worldjson['rooms']:
@@ -70,7 +70,7 @@ class World():
         # populate the grid
         self.grid = wf.make_grid(self.grid_size)
         for g in worldjson['grid']:
-            self.grid[g['x']][g['y']].fromJson(g)
+            self.grid[g['x']][g['y']].from_json(g)
 
         # for the moment the player respawn in the first room
         spawn = self.rooms[0].get_center()

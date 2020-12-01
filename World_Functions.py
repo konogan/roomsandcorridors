@@ -1,13 +1,14 @@
 # encoding: utf-8`
-from collections import namedtuple
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+
 import random
 import math
 
 from BSD_Generator import BSDGenerator
 
 from Cell import Cell
-
-Coord = namedtuple('Coord', 'x y')
 
 
 def make_grid(grid_size):

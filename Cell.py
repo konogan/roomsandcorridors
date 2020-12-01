@@ -3,12 +3,11 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 
-from collections import namedtuple
+
 import pygame
 
-import mycolors
 
-Coord = namedtuple('Coord', 'x y')
+from Constants import Coord, My_colors
 
 
 class Cell():
@@ -57,7 +56,7 @@ class Cell():
             if current_turn - self.last_time_was_seen > 100:
                 self.was_discovered = False
 
-    def toJson(self):
+    def to_json(self):
         export = {}
         export['x'] = self.coord.x
         export['y'] = self.coord.y
@@ -69,7 +68,7 @@ class Cell():
         export['s'] = self.last_time_was_seen
         return export
 
-    def fromJson(self, json_data):
+    def from_json(self, json_data):
         self.is_free = json_data['f']
         self.belongs_to = json_data['b']
         self.type = json_data['t']
@@ -80,20 +79,22 @@ class Cell():
     def render(self, surface, tile_size, offset=(0, 0), debug=False):
 
         if self.type == "WALL":
-            cell_color = mycolors.GREY
-            cell_color_in_memory = mycolors.GREY
+            cell_color = My_colors.GREY
+            cell_color_in_memory = My_colors.GREY
         elif self.type == "ROOM":
-            cell_color = mycolors.WHITE
-            cell_color_in_memory = mycolors.GREY
+            cell_color = My_colors.WHITE
+            cell_color_in_memory = My_colors.GREY
         elif self.type == "CORRIDOR":
-            cell_color = mycolors.WHITE
-            cell_color_in_memory = mycolors.GREY
+            cell_color = My_colors.WHITE
+            cell_color_in_memory = My_colors.GREY
         elif self.type == "DOOR":
-            cell_color = mycolors.GREEN
-            cell_color_in_memory = mycolors.GREY
+            cell_color = My_colors.GREEN
+            cell_color_in_memory = My_colors.GREY
         else:
-            cell_color = mycolors.BLACK
+            cell_color = My_colors.BLACK
 
+        
+        
         rect = pygame.Rect(
             (self.coord.x-offset[0])*tile_size,
             (self.coord.y-offset[1])*tile_size,
@@ -102,11 +103,10 @@ class Cell():
         )
 
         if self.visibility:
-            pygame.draw.rect(surface, cell_color, rect)
+            pygame.draw.rect(surface, cell_color.value, rect)
         else:
             if self.was_discovered:
-                # TODO change opacity based on time since discovering
-                pygame.draw.rect(surface, cell_color_in_memory, rect)
+                pygame.draw.rect(surface, cell_color_in_memory.value, rect)
 
         if debug and self.visibility:
             cell_font = pygame.font.SysFont('arial', 15)

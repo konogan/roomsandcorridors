@@ -1,4 +1,7 @@
 # encoding: utf-8
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
 
 import pygame
 
@@ -6,14 +9,10 @@ import pygame
 class GameStats():
     def __init__(self, settings, surface):
         self.settings = settings
-        self.reset_stats()
         self.messages = []
         self.surface = surface
         self.font_size = 15
         self.font = pygame.font.SysFont('arial', self.font_size)
-
-    def reset_stats(self):
-        self.game_active = False
 
     def add_message(self, text):
         self.messages.append(text)
