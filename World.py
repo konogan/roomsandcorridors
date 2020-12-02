@@ -11,9 +11,9 @@ from Player import Player
 
 class World():
 
-    def __init__(self, settings, stats, surface, camera):
+    def __init__(self, settings, messages, surface, camera):
         self.surface = surface
-        self.stats = stats
+        self.messages = messages
         self.settings = settings
         self.surface_rect = surface.get_rect()
         self.grid_size = (self.settings.grid_width, self.settings.grid_height)
@@ -22,7 +22,7 @@ class World():
         self.player = None
         self.camera = camera
         self.debug = False
-        self.mouse = Coord(0,0)
+        self.mouse = Coord(0, 0)
 
     def new(self):
         # empty elements
@@ -67,7 +67,7 @@ class World():
         self.rooms = []
         for r in worldjson['rooms']:
             self.rooms.append(Room(r['x'], r['y'], r['w'], r['h'], r['i']))
-            
+
         # populate the grid
         self.grid = wf.make_grid(self.grid_size)
         for g in worldjson['grid']:
@@ -79,17 +79,44 @@ class World():
         self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
         self.camera.look_at(self.player.coord.x, self.player.coord.y)
 
+    def player_open_door(self):
+        # test 4 directions for a door and reverse his state
+        for potential_door_coord in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            candidate = self.grid[self.player.coord.x + potential_door_coord[0]
+                                  ][self.player.coord.y+potential_door_coord[1]]
+            if candidate and candidate.type == "DOOR":
+                if candidate.is_door_close:
+                    candidate.open()
+                    self.messages.add_message('You open the door')
+
+    def player_close_door(self):
+        # test 4 directions for a door and reverse his state
+        for potential_door_coord in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            candidate = self.grid[self.player.coord.x + potential_door_coord[0]
+                                  ][self.player.coord.y+potential_door_coord[1]]
+            if candidate and candidate.type == "DOOR":
+                if candidate.is_door_open:
+                    candidate.close()
+                    self.messages.add_message('You close the door')
+
     def move_player_intent(self, direction):
         target_cell = self.grid[self.player.coord.x +
                                 direction[0]][self.player.coord.y+direction[1]]
 
+        if target_cell.is_door_open():
+            self.messages.add_message('You face a open door')
+        
+        if target_cell.is_door_close():
+            self.messages.add_message('You face a close door')
+            
         if target_cell.is_walkable():
             if self.player.current_room != target_cell.belongs_to:
                 if target_cell.belongs_to == 0:
-                    self.stats.add_message('You enter a corridor')
+                    self.messages.add_message('You enter a corridor')
                 else:
-                    self.stats.add_message('You enter a room')
-            self.stats.player_move(direction)
+                    self.messages.add_message('You enter a room')
+
+            self.messages.player_move(direction)
             self.player.move(direction, target_cell.belongs_to)
 
             # check the player postion against the camera viewport
@@ -97,11 +124,12 @@ class World():
             self.camera.look_at(self.player.coord.x, self.player.coord.y)
 
         else:
-            self.stats.player_move(None)
+            self.messages.player_move(None)
 
     def set_mouse(self, mouse_x, mouse_y):
-        self.mouse = Coord(int(mouse_x//self.settings.tile_size + self.camera.top_left_x), int(mouse_y//self.settings.tile_size+self.camera.top_left_y))
-        
+        self.mouse = Coord(int(mouse_x//self.settings.tile_size + self.camera.top_left_x),
+                           int(mouse_y//self.settings.tile_size+self.camera.top_left_y))
+
     def update(self):
         # update world content
         pass
@@ -119,7 +147,7 @@ class World():
             for coord_y in range(self.camera.top_left_y, self.camera.bottom_right_y+1):
                 if self.grid[coord_x][coord_y]:
                     self.grid[coord_x][coord_y].render(
-                        self.surface, self.settings.tile_size, offset, self.debug,self.mouse.x == coord_x and self.mouse.y==coord_y)
+                        self.surface, self.settings.tile_size, offset, self.debug, self.mouse.x == coord_x and self.mouse.y == coord_y)
 
         # iterate over each room and render it
         if self.debug:

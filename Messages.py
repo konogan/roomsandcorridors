@@ -13,13 +13,20 @@ class Messages():
         self.surface = surface
         self.font_size = 15
         self.font = pygame.font.SysFont('arial', self.font_size)
+        self.add_message("You arrive in a dark room")
+        self.add_message("-------------------------")
+        self.add_message("Move with the arrows")
+        self.add_message("(o)pen door/chest")
+        self.add_message("(c)lose door/chest")
+        self.add_message("(p)ick item")
+        self.add_message("-------------------------")
 
     def add_message(self, text):
         self.messages.append(text)
 
     def player_move(self, direction):
         if direction is None:
-            self.add_message('You hit the wall')
+            pass
         else:
             if direction[1] < 0:
                 orientation = "North"

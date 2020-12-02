@@ -37,12 +37,26 @@ class Cell():
         self.is_free = False
         self.state = state
         self.type = "DOOR"
+        
+    def open(self):
+        self.is_free = True
+        self.state = "OPEN"
+    
+    def close(self):
+        self.is_free = False
+        self.state = "CLOSE"
 
     def set_wall(self):
         self.type = "WALL"
 
     def is_walkable(self):
-        return self.type != "WALL"
+        return  self.type == "ROOM" or self.type == "CORRIDOR" or (self.type == "DOOR" and self.state == "OPEN")
+    
+    def is_door_close(self):
+        return self.type == "DOOR" and self.state == "CLOSE"
+    
+    def is_door_open(self):
+        return self.type == "DOOR" and self.state == "OPEN"
 
     def block_fov(self):
         return self.type == "WALL" or (self.type == "DOOR" and self.state == "CLOSE")

@@ -49,6 +49,10 @@ def check_keyup(event, game):
         if event.key == pygame.K_DOWN:
             game.new_turn()
             game.world.move_player_intent((0, 1))
+        if event.key == pygame.K_o:
+            game.world.player_open_door()
+        if event.key == pygame.K_c:
+            game.world.player_close_door()
         if event.key == pygame.K_g:
             game.switch_debug()
 

@@ -79,7 +79,9 @@ class Game:
     def load(self):
         with open('world.save') as json_file:
             worldjson = json.load(json_file)
-            self.world.from_json(worldjson)
+        self.world.from_json(worldjson)
+        self.need_redraw = True
+        self.state = States.PLAY    
 
     def save(self):
         worldjson = self.world.to_json()
@@ -100,19 +102,19 @@ class Game:
 
                 self.world.update()
 
-                if self.need_redraw:
+                #if self.need_redraw:
 
-                    self.world.update_fov(self.turns)
+                self.world.update_fov(self.turns)
 
-                    # render
-                    self.world.render()
-                    self.messages.render()
+                # render
+                self.world.render()
+                self.messages.render()
 
-                    # display
-                    self.screen.blit(self.world_surface, (0, 0))
-                    self.screen.blit(self.ui_surface, (self.settings.screen_width -
-                                                       self.settings.ui_width, 0))
-                    self.need_redraw = False
+                # display
+                self.screen.blit(self.world_surface, (0, 0))
+                self.screen.blit(self.ui_surface, (self.settings.screen_width -
+                                                    self.settings.ui_width, 0))
+                self.need_redraw = False
 
             if self.state == States.ITEM:
                 print("Inventory management")
