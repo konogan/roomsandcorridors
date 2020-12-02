@@ -16,15 +16,18 @@ Its an uncomplete roguelike game
 - [x] Add a player
 - [x] Implement a "camera" system that follows the player
 - [x] Fog of war, line of sight
-- [ ] Dynamic lighting
+- [x] Dynamic lighting
 - [x] Line of sight
+- [x] Implement door states : locked,closed,open. if the door stay open, monster and los can pass thru
 - [ ] Items
 - [ ] Inventory management
-- [ ] Implement door states : locked,closed,open. if the door stay open, monster and los can pass thru
 - [ ] NPC
 - [ ] NPC Ai (A*, Dijkstra, ...)
 - [ ] Combat system melee
 - [ ] Combat system ranged attack
+
+
+
 
 ## Bonus
 
