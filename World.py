@@ -4,6 +4,7 @@
 # pylint: disable=missing-function-docstring
 
 import World_Functions as wf
+from Constants import Coord
 from Room import Room
 from Player import Player
 
@@ -21,8 +22,7 @@ class World():
         self.player = None
         self.camera = camera
         self.debug = False
-        self.mouse_x = None
-        self.mouse_y = None
+        self.mouse = Coord(0,0)
 
     def new(self):
         # empty elements
@@ -67,12 +67,14 @@ class World():
         self.rooms = []
         for r in worldjson['rooms']:
             self.rooms.append(Room(r['x'], r['y'], r['w'], r['h'], r['i']))
+            
         # populate the grid
         self.grid = wf.make_grid(self.grid_size)
         for g in worldjson['grid']:
             self.grid[g['x']][g['y']].from_json(g)
 
         # for the moment the player respawn in the first room
+        # TODO : get player from savefile
         spawn = self.rooms[0].get_center()
         self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
         self.camera.look_at(self.player.coord.x, self.player.coord.y)
@@ -97,11 +99,9 @@ class World():
         else:
             self.stats.player_move(None)
 
-    def set_mouse_click(self, mouse_x, mouse_y):
-        self.mouse_x = mouse_x
-        self.mouse_y = mouse_y
-        print(mouse_x, mouse_y)
-
+    def set_mouse(self, mouse_x, mouse_y):
+        self.mouse = Coord(int(mouse_x//self.settings.tile_size + self.camera.top_left_x), int(mouse_y//self.settings.tile_size+self.camera.top_left_y))
+        
     def update(self):
         # update world content
         pass
@@ -119,7 +119,7 @@ class World():
             for coord_y in range(self.camera.top_left_y, self.camera.bottom_right_y+1):
                 if self.grid[coord_x][coord_y]:
                     self.grid[coord_x][coord_y].render(
-                        self.surface, self.settings.tile_size, offset, self.debug)
+                        self.surface, self.settings.tile_size, offset, self.debug,self.mouse.x == coord_x and self.mouse.y==coord_y)
 
         # iterate over each room and render it
         if self.debug:

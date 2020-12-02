@@ -7,15 +7,13 @@ from Button import Button
 
 
 class MainMenu:
-    def __init__(self, menu_surface, save_exist):
+    def __init__(self, menu_surface, save_exist=False):
         self.surface = menu_surface
-        self.save_exist = save_exist
-        self.surface.fill((55, 155, 255))
-        self.buttons = []
-        self.__init_buttons()
+        self.init_buttons(save_exist)
 
-    def __init_buttons(self):
-        if self.save_exist:
+    def init_buttons(self, save_exist=False):
+        self.buttons = []
+        if save_exist:
             play_button = Button("load", self.surface, "(l)oad world", -200)
             self.buttons.append(play_button)
 

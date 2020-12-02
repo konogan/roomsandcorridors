@@ -23,10 +23,13 @@ class Game:
     def __init__(self):
         self.settings = Settings()
         self.state = States.LOAD
+
+        # geometries
         screen_size = (self.settings.screen_width, self.settings.screen_height)
         world_size = (self.settings.screen_width -
                       self.settings.ui_width, self.settings.screen_height)
         ui_size = (self.settings.ui_width, self.settings.screen_height)
+
         self.screen = pygame.display.set_mode(screen_size)
 
         self.center = (int((self.settings.screen_width-self.settings.ui_width) //
@@ -36,6 +39,8 @@ class Game:
         game_icon = pygame.image.load('assets/logo.png')
         pygame.display.set_icon(game_icon)
 
+        self.save_exist = os.path.isfile('world.save')
+
         # camera
         self.camera = Camera(self)
 
@@ -44,13 +49,11 @@ class Game:
         self.world_surface = pygame.Surface(world_size)     # gamescreen
         self.ui_surface = pygame.Surface(ui_size)           # ui bar
 
-        # game stats
-        self.stats = Messages(self.settings, self.ui_surface)
+        # in game messages
+        self.messages = Messages(self.settings, self.ui_surface)
 
-        self.save_exist = os.path.isfile('world.save')
-        self.state = States.INIT
         # init
-        self.world = World(self.settings, self.stats,
+        self.world = World(self.settings, self.messages,
                            self.world_surface, self.camera)
         self.main_menu = MainMenu(self.menu_surface, self.save_exist)
         self.turns = 0
@@ -72,18 +75,20 @@ class Game:
         print("Generate a new world")
         self.world.new()
         self.save()
-        self.need_redraw = True
 
     def load(self):
         with open('world.save') as json_file:
             worldjson = json.load(json_file)
             self.world.from_json(worldjson)
-        
 
     def save(self):
         worldjson = self.world.to_json()
         with open('world.save', 'w') as outfile:
             json.dump(worldjson, outfile)
+        print('save')
+        self.main_menu.init_buttons(True)
+        self.need_redraw = True
+        self.state = States.PLAY
 
     def run(self):
         clock = pygame.time.Clock()
@@ -101,7 +106,7 @@ class Game:
 
                     # render
                     self.world.render()
-                    self.stats.render()
+                    self.messages.render()
 
                     # display
                     self.screen.blit(self.world_surface, (0, 0))
@@ -118,5 +123,6 @@ class Game:
 
             # flip display
             pygame.display.flip()
+
             # limit speed
             clock.tick(30)
