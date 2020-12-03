@@ -4,7 +4,7 @@
 # pylint: disable=missing-function-docstring
 
 import World_Functions as wf
-from Constants import Coord
+from Constants import Coord,Direction
 from Room import Room
 from Player import Player
 
@@ -99,32 +99,53 @@ class World():
                     candidate.close()
                     self.messages.add_message('You close the door')
 
-    def move_player_intent(self, direction):
-        target_cell = self.grid[self.player.coord.x +
-                                direction[0]][self.player.coord.y+direction[1]]
+    def cell_in_front(self, coord_x, coord_y, orientation):
+        if self.grid[coord_x + orientation.value[0]][coord_y+orientation.value[1]]:
+            return self.grid[coord_x + orientation.value[0]][coord_y+orientation.value[1]]
 
-        if target_cell.is_door_open():
-            self.messages.add_message('You face a open door')
-        
-        if target_cell.is_door_close():
-            self.messages.add_message('You face a close door')
-            
-        if target_cell.is_walkable():
-            if self.player.current_room != target_cell.belongs_to:
-                if target_cell.belongs_to == 0:
-                    self.messages.add_message('You enter a corridor')
-                else:
-                    self.messages.add_message('You enter a room')
+    def move_player_intent(self, new_orientation):
 
-            self.messages.player_move(direction)
-            self.player.move(direction, target_cell.belongs_to)
+        current_orientation = self.player.orientation
+        self.player.orient(new_orientation)
 
-            # check the player postion against the camera viewport
-            # move the center look if necessary
-            self.camera.look_at(self.player.coord.x, self.player.coord.y)
+        if current_orientation != new_orientation:
+            # player turn on itself / no move
+            self.messages.player_orient(new_orientation)
 
         else:
-            self.messages.player_move(None)
+            # player stay on same orientation
+            # it an move
+
+            target_cell = self.cell_in_front(
+                self.player.coord.x, self.player.coord.y, self.player.orientation)
+
+            if target_cell and target_cell.is_walkable():
+                current_room = self.player.current_room
+                self.messages.player_move(new_orientation)
+                self.player.move(target_cell.coord, target_cell.belongs_to)
+
+                if self.player.current_room != current_room:
+                    if self.player.current_room == 0:
+                        self.messages.add_message('You enter a corridor')
+                    else:
+                        self.messages.add_message('You enter a room')
+
+                # check the player postion against the camera viewport
+                # move the center look if necessary
+                self.camera.look_at(self.player.coord.x,
+                                    self.player.coord.y)
+
+                next_target_cell = self.cell_in_front(
+                    self.player.coord.x, self.player.coord.y, self.player.orientation)
+
+                if next_target_cell.is_door_open():
+                    self.messages.add_message('You face a open door')
+
+                if next_target_cell.is_door_close():
+                    self.messages.add_message('You face a close door')
+
+                if next_target_cell.is_wall():
+                    self.messages.add_message('You face a Wall')
 
     def set_mouse(self, mouse_x, mouse_y):
         self.mouse = Coord(int(mouse_x//self.settings.tile_size + self.camera.top_left_x),

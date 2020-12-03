@@ -5,36 +5,50 @@
 
 import pygame
 
-from Constants import Coord, My_colors
+from Constants import Coord, My_colors,Direction
 
 
 class Player():
-    def __init__(self, coord_x, coord_y,room_id):
+    def __init__(self, coord_x, coord_y, room_id):
         self.coord = Coord(coord_x, coord_y)
-        self.orientation = "N"
+        self.orientation = Direction.NORTH
         self.current_room = room_id
 
-    def move(self, direction,room_id):
-        if direction[1] < 0:
-            self.orientation = "N"
-        if direction[1] > 0:
-            self.orientation = "S"
-        if direction[0] > 0:
-            self.orientation = "E"
-        if direction[0] < 0:
-            self.orientation = "W"
-
+    def move(self, new_coord, room_id):
         self.current_room = room_id
-        
-        self.coord = Coord(
-            self.coord.x + direction[0],
-            self.coord.y + direction[1])
+        self.coord = new_coord
 
-    def render(self, surface, tile_size,offset=(0,0)):
-        rect = pygame.Rect(
+    def orient(self, direction):
+        self.orientation = direction
+
+    def render(self, world_surface, tile_size, offset=(0, 0)):
+        local_rect = pygame.Rect(0, 0, tile_size, tile_size)
+
+        local_surface = pygame.Surface((tile_size, tile_size))
+
+        world_rect = pygame.Rect(
             (self.coord.x-offset[0])*tile_size,
             (self.coord.y-offset[1])*tile_size,
             tile_size,
             tile_size
         )
-        pygame.draw.rect(surface, My_colors.PLAYER.value, rect)
+
+        pygame.draw.rect(local_surface, My_colors.WHITE.value, local_rect)
+        pygame.draw.polygon(local_surface, My_colors.PLAYER.value, (
+            (int(tile_size//2), 0),
+            (0, tile_size),
+            (tile_size, tile_size))
+        )
+
+        if self.orientation == Direction.NORTH:
+            angle = 0
+        if self.orientation == Direction.EAST:
+            angle = -90
+        if self.orientation == Direction.SOUTH:
+            angle = 180
+        if self.orientation == Direction.WEST:
+            angle = 90
+
+        rotated_surface = pygame.transform.rotate(local_surface, angle)
+
+        world_surface.blit(rotated_surface, world_rect)

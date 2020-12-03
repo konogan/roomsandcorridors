@@ -20,7 +20,8 @@ Its an uncomplete roguelike game
 - [x] Line of sight
 - [x] Implement door states : locked,closed,open. if the door stay open, monster and los can pass thru
 - [x] Door interaction
-- [ ] Items Generation Pickinkg Dropping System
+- [x] Player Orientation
+- [ ] Items :  Generation, Pickinkg, Dropping
 - [ ] Inventory management
 - [ ] NPC
 - [ ] NPC Ai (A*, Dijkstra, ...)

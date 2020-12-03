@@ -5,7 +5,7 @@
 
 import sys
 import pygame
-from Constants import States
+from Constants import States,Direction
 
 
 def check_events(game):
@@ -39,16 +39,16 @@ def check_keyup(event, game):
     if game.state == States.PLAY:
         if event.key == pygame.K_RIGHT:
             game.new_turn()
-            game.world.move_player_intent((1, 0))
+            game.world.move_player_intent(Direction.EAST)
         if event.key == pygame.K_LEFT:
             game.new_turn()
-            game.world.move_player_intent((-1, 0))
+            game.world.move_player_intent(Direction.WEST)
         if event.key == pygame.K_UP:
             game.new_turn()
-            game.world.move_player_intent((0, -1))
+            game.world.move_player_intent(Direction.NORTH)
         if event.key == pygame.K_DOWN:
             game.new_turn()
-            game.world.move_player_intent((0, 1))
+            game.world.move_player_intent(Direction.SOUTH)
         if event.key == pygame.K_o:
             game.world.player_open_door()
         if event.key == pygame.K_c:

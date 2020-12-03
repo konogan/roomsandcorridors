@@ -4,6 +4,7 @@
 # pylint: disable=missing-function-docstring
 
 import pygame
+from Constants import Direction
 
 
 class Messages():
@@ -24,19 +25,29 @@ class Messages():
     def add_message(self, text):
         self.messages.append(text)
 
-    def player_move(self, direction):
-        if direction is None:
-            pass
-        else:
-            if direction[1] < 0:
-                orientation = "North"
-            if direction[1] > 0:
-                orientation = "South"
-            if direction[0] > 0:
-                orientation = "East"
-            if direction[0] < 0:
-                orientation = "West"
-            self.add_message('You head '+orientation)
+    def player_move(self, orientation):
+        if orientation == Direction.NORTH:
+            orientation_word = "North"
+        if orientation == Direction.SOUTH:
+            orientation_word = "South"
+        if orientation == Direction.EAST:
+            orientation_word = "East"
+        if orientation == Direction.WEST:
+            orientation_word = "West"
+
+        self.add_message('You head '+orientation_word)
+
+    def player_orient(self, orientation):
+        if orientation == Direction.NORTH:
+            orientation_word = "North"
+        if orientation == Direction.SOUTH:
+            orientation_word = "South"
+        if orientation == Direction.EAST:
+            orientation_word = "East"
+        if orientation == Direction.WEST:
+            orientation_word = "West"
+
+        self.add_message('You face to the  '+orientation_word)
 
     def render(self):
         # fill black

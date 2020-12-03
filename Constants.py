@@ -12,6 +12,13 @@ class States(Enum):
     ITEM = 4  # on in-gmae inventory management
 
 
+class Direction(Enum):
+    NORTH = (0, -1)
+    SOUTH = (0, 1)
+    EAST = (1, 0)
+    WEST = (-1, 0)
+
+
 class My_colors(Enum):
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
