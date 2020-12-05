@@ -114,13 +114,10 @@ class World():
 
     def player_pick_item(self):
         # pick all items pickable on player location
-        print(self.player.coord.x, self.player.coord.y)
-        print(self.grid[self.player.coord.x][self.player.coord.x].items)
-        for found_item in self.grid[self.player.coord.x][self.player.coord.x].items:
-            print(found_item)
+        for found_item in self.grid[self.player.coord.x][self.player.coord.y].items:
             self.messages.add_message('You pick a '+str(found_item))
             if found_item.pickable:
-                self.grid[self.player.coord.x][self.player.coord.x].items.remove(
+                self.grid[self.player.coord.x][self.player.coord.y].items.remove(
                     found_item)
             self.player.pick_item(found_item)
 
