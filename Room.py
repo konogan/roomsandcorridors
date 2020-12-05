@@ -16,10 +16,14 @@ class Room():
         self.height = height
         self.room_id = room_id
         self.is_reachable = False
+        self.cells_coord=[]
 
     def get_center(self):
         return self.coord.x + int(self.width/2), self.coord.y + int(self.height/2)
 
+    def append_cell(self,coord_of_cell):
+        self.cells_coord.append(coord_of_cell)
+    
     def to_json(self):
         export = {}
         export['x'] = self.coord.x

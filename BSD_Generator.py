@@ -6,6 +6,8 @@
 import random
 
 from Room import Room
+from Constants import Coord
+
 
 
 class BSDGenerator:
@@ -81,12 +83,15 @@ class BSDGenerator:
             # append room to the world
             #print(f"Create {room_id} : ({room_x}, {room_y}) w={room_width} h={room_height} ")
             room = Room(room_x, room_y, room_width, room_height, room_id)
-            self.world.rooms.append(room)
+            
 
             # append room to the grid
             for r in range(room_y, room_y + room_height):
                 for c in range(room_x, room_x + room_width):
+                    room.append_cell(Coord(c,r))
                     self.world.grid[c][r].belong_to_room(room_id)
+                    
+            self.world.rooms.append(room)
 
     def __get_center_of_leaf(self, leaf):
         section_width = leaf[3] - leaf[1]
