@@ -9,6 +9,7 @@ import math
 from BSD_Generator import BSDGenerator
 
 from Cell import Cell
+from Item import Item
 
 
 def make_grid(grid_size):
@@ -86,7 +87,24 @@ def place_door(world):
                             random.choice(['OPEN', 'CLOSE']))
 
 
-def update_fov(world, current_turn):
+def random_item():
+    # generate a random item
+    if random.random() < 0.90:
+        ret = Item("TORCH")
+    else:
+        ret = Item("CHEST", False)
+    return ret
+
+
+def place_items(world):
+    # place randomly items in the world
+    for i in range(world.grid_size[0]):
+        for j in range(world.grid_size[1]):
+            if world.grid[i][j].type == "ROOM_FLOOR":
+                if random.random() < 0.03:
+                    new_item = random_item()
+                    world.grid[i][j].items.append(new_item)
+
 
 def update_fov(world, current_turn, max_distance=10):
     # reinit display of all cells

@@ -4,7 +4,7 @@
 # pylint: disable=missing-function-docstring
 
 import World_Functions as wf
-from Constants import Coord,Direction
+from Constants import Coord, Direction
 from Room import Room
 from Player import Player
 
@@ -43,6 +43,7 @@ class World():
         wf.place_door(self)
 
         # place items
+        wf.place_items(self)
 
         # place ennemies
 
@@ -111,6 +112,18 @@ class World():
                     candidate.close()
                     self.messages.add_message('You close the door')
 
+    def player_pick_item(self):
+        # pick all items pickable on player location
+        print(self.player.coord.x, self.player.coord.y)
+        print(self.grid[self.player.coord.x][self.player.coord.x].items)
+        for found_item in self.grid[self.player.coord.x][self.player.coord.x].items:
+            print(found_item)
+            self.messages.add_message('You pick a '+str(found_item))
+            if found_item.pickable:
+                self.grid[self.player.coord.x][self.player.coord.x].items.remove(
+                    found_item)
+            self.player.pick_item(found_item)
+
     def cell_in_front(self, coord_x, coord_y, orientation):
         if self.grid[coord_x + orientation.value[0]][coord_y+orientation.value[1]]:
             return self.grid[coord_x + orientation.value[0]][coord_y+orientation.value[1]]
@@ -124,38 +137,44 @@ class World():
             # player turn on itself
             self.messages.player_orient(new_orientation)
 
-            # player stay on same orientation
-            target_cell = self.cell_in_front(
-                self.player.coord.x, self.player.coord.y, self.player.orientation)
+        # player stay on same orientation
+        target_cell = self.cell_in_front(
+            self.player.coord.x, self.player.coord.y, self.player.orientation)
 
-            if target_cell and target_cell.is_walkable():
-                current_room = self.player.current_room
+        if target_cell and target_cell.is_walkable():
+            current_room = self.player.current_room
             # perform the move
-                self.messages.player_move(new_orientation)
-                self.player.move(target_cell.coord, target_cell.belongs_to)
+            self.messages.player_move(new_orientation)
+            self.player.move(target_cell.coord, target_cell.belongs_to)
 
             # check the player postion against the camera viewport
             # move the center look if necessary
             self.camera.look_at(self.player.coord.x,
                                 self.player.coord.y)
 
-                if self.player.current_room != current_room:
-                    if self.player.current_room == 0:
-                        self.messages.add_message('You enter a corridor')
-                    else:
-                        self.messages.add_message('You enter a room')
+            if self.player.current_room != current_room:
+                if self.player.current_room == 0:
+                    self.messages.add_message('You enter a corridor')
+                else:
+                    self.messages.add_message('You enter a room')
 
-                next_target_cell = self.cell_in_front(
-                    self.player.coord.x, self.player.coord.y, self.player.orientation)
+            next_target_cell = self.cell_in_front(
+                self.player.coord.x, self.player.coord.y, self.player.orientation)
 
-                if next_target_cell.is_door_open():
-                    self.messages.add_message('You face a open door')
+            if next_target_cell.is_door_open():
+                self.messages.add_message('You face a open door')
 
-                if next_target_cell.is_door_close():
-                    self.messages.add_message('You face a close door')
+            if next_target_cell.is_door_close():
+                self.messages.add_message('You face a close door')
 
-                if next_target_cell.is_wall():
-                    self.messages.add_message('You face a Wall')
+            if next_target_cell.is_wall():
+                self.messages.add_message('You face a Wall')
+
+        # interract with the content of the cell
+            if self.grid[self.player.coord.x][self.player.coord.y].items:
+                for item in self.grid[self.player.coord.x][self.player.coord.y].items:
+                    self.messages.add_message(
+                        'You find a '+item.type+', (p)ick it up')
 
     def set_mouse(self, mouse_x, mouse_y):
         self.mouse = Coord(int(mouse_x//self.settings.tile_size + self.camera.top_left_x),

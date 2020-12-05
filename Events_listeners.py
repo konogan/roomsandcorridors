@@ -5,7 +5,7 @@
 
 import sys
 import pygame
-from Constants import States,Direction
+from Constants import States, Direction
 
 
 def check_events(game):
@@ -53,6 +53,8 @@ def check_keyup(event, game):
             game.world.player_open_door()
         if event.key == pygame.K_c:
             game.world.player_close_door()
+        if event.key == pygame.K_p:
+            game.world.player_pick_item()
         if event.key == pygame.K_g:
             game.switch_debug()
 

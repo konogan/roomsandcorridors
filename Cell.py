@@ -22,6 +22,7 @@ class Cell():
         self.last_time_was_seen = 0
         self.distance = 0
         self.state = ""
+        self.items = []
 
     def __repr__(self):
         return '{coord ('+str(self.coord.x)+','+str(self.coord.y)+'), type='+str(self.type) + ', belongsto='+str(self.belongs_to) + '}'
@@ -57,9 +58,9 @@ class Cell():
 
     def is_wall(self):
         return self.type == "WALL"
-    
+
     def is_walkable(self):
-        return self.type == "ROOM" or self.type == "CORRIDOR" or (self.type == "DOOR" and self.state == "OPEN")
+        return self.type == "ROOM_FLOOR" or self.type == "CORRIDOR_FLOOR" or (self.type == "DOOR" and self.state == "OPEN")
 
     def is_door_close(self):
         return self.type == "DOOR" and self.state == "CLOSE"
@@ -143,6 +144,11 @@ class Cell():
                 else:
                     pygame.draw.rect(
                         local_surface, cell_color.value, local_rect)
+
+                # content pass
+                for content_of_cell in self.items:
+                    object_surface = content_of_cell.render_surface(tile_size)
+                    local_surface.blit(object_surface, local_rect)
 
                 # mouse pass
                 if is_under_mouse and debug:
