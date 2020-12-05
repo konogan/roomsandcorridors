@@ -62,7 +62,7 @@ class Messages():
             message = self.font.render("{}".format(msg), True, (255, 255, 255))
             rect = pygame.Rect(
                 10,
-                10 + index * (self.font_size+3),
+                500 + index * (self.font_size+3),
                 self.settings.ui_width,
                 self.settings.screen_height)
 

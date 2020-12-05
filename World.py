@@ -170,8 +170,10 @@ class World():
         # interract with the content of the cell
             if self.grid[self.player.coord.x][self.player.coord.y].items:
                 for item in self.grid[self.player.coord.x][self.player.coord.y].items:
-                    self.messages.add_message(
-                        'You find a '+item.type+', (p)ick it up')
+                    if item.type == 'CHEST':
+                        self.messages.add_message('You find a Chest, (o)pen it up')
+                    else :
+                        self.messages.add_message('You find a '+item.type.lower().capitalize() +', (p)ick it up')
 
     def set_mouse(self, mouse_x, mouse_y):
         self.mouse = Coord(int(mouse_x//self.settings.tile_size + self.camera.top_left_x),

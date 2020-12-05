@@ -9,7 +9,7 @@ import math
 from BSD_Generator import BSDGenerator
 
 from Cell import Cell
-from Item import Item
+from Item import Item, Torch, Chest
 
 
 def make_grid(grid_size):
@@ -87,13 +87,16 @@ def place_door(world):
                             random.choice(['OPEN', 'CLOSE']))
 
 
-def random_item():
-    # generate a random item
-    if random.random() < 0.90:
-        ret = Item("TORCH")
-    else:
-        ret = Item("CHEST", False)
-    return ret
+# def random_item():
+#     # generate a random item
+#     if random.random() < 0.90:
+#         ret = Torch()
+#     else:
+#         ret = Chest()
+#         for _ in range(random.randint(0, 4)):
+#             if random.random() < 0.50:
+#                 ret.add_item(Torch())
+#     return ret
 
 
 def place_items(world):
@@ -102,7 +105,7 @@ def place_items(world):
         for j in range(world.grid_size[1]):
             if world.grid[i][j].type == "ROOM_FLOOR":
                 if random.random() < 0.03:
-                    new_item = random_item()
+                    new_item = Torch()
                     world.grid[i][j].items.append(new_item)
 
 
