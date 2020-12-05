@@ -23,6 +23,7 @@ class World():
         self.camera = camera
         self.debug = False
         self.mouse = Coord(0, 0)
+        self.new()
 
     def new(self):
         # empty elements

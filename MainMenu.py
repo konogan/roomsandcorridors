@@ -14,7 +14,7 @@ class MainMenu:
     def init_buttons(self, save_exist=False):
         self.buttons = []
         if save_exist:
-            play_button = Button("load", self.surface, "(l)oad world", -200)
+            play_button = Button("load", self.surface, "re(l)oad world", -200)
             self.buttons.append(play_button)
 
         new_button = Button("new", self.surface, "(n)ew world", -140)

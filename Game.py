@@ -58,7 +58,7 @@ class Game:
         self.main_menu = MainMenu(self.menu_surface, self.save_exist)
         self.turns = 0
         self.need_redraw = True
-        self.state = States.MENU
+        self.state = States.PLAY
 
     def new_turn(self):
         self.need_redraw = True
