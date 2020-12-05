@@ -47,15 +47,20 @@ class Game:
         # render surfaces
         self.menu_surface = pygame.Surface(screen_size)     # loading screen
         self.world_surface = pygame.Surface(world_size)     # gamescreen
+        self.inventory_surface = pygame.Surface(world_size)     # gamescreen
         self.ui_surface = pygame.Surface(ui_size)           # ui bar
 
         # in game messages
         self.messages = Messages(self.settings, self.ui_surface)
 
         # init
-        self.world = World(self.settings, self.messages,
-                           self.world_surface, self.camera)
+        self.world = World(self.settings, 
+                           self.messages,
+                           self.world_surface,
+                           self.inventory_surface,
+                           self.camera)
         self.main_menu = MainMenu(self.menu_surface, self.save_exist)
+        
         self.turns = 0
         self.need_redraw = True
         self.state = States.PLAY
@@ -64,6 +69,16 @@ class Game:
         self.need_redraw = True
         self.turns += 1
 
+    
+    def switch_inventory(self):
+        if self.state==States.INVENTORY:
+            self.state= States.PLAY
+        else :
+            
+            self.state = States.INVENTORY
+    
+    
+    
     def switch_debug(self):
         self.need_redraw = True
         if self.world.debug:
@@ -102,23 +117,21 @@ class Game:
 
                 self.world.update()
 
-                #if self.need_redraw:
-
                 self.world.update_fov(self.turns)
 
                 # render
-                self.world.render()
+                self.world.render_grid()
                 self.messages.render()
 
                 # display
                 self.screen.blit(self.world_surface, (0, 0))
                 self.screen.blit(self.ui_surface, (self.settings.screen_width -
                                                     self.settings.ui_width, 0))
-                self.need_redraw = False
 
-            if self.state == States.ITEM:
-                print("Inventory management")
-
+            if self.state == States.INVENTORY:
+                self.world.render_inventory()
+                self.screen.blit(self.inventory_surface, (0, 0))
+            
             if self.state == States.MENU:
                 self.screen.blit(self.main_menu.render(), (0, 0))
                 self.need_redraw = True

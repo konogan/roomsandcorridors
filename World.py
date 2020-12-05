@@ -11,8 +11,9 @@ from Player import Player
 
 class World():
 
-    def __init__(self, settings, messages, surface, camera):
+    def __init__(self, settings, messages, surface,inventory_surface,camera):
         self.surface = surface
+        self.inventory_surface = inventory_surface
         self.messages = messages
         self.settings = settings
         self.surface_rect = surface.get_rect()
@@ -192,7 +193,10 @@ class World():
         # update field of view of the player
         wf.update_fov(self, current_turn, self.player.view_distance)
 
-    def render(self):
+    def render_inventory(self):
+        self.inventory_surface.fill((20, 20, 0))
+    
+    def render_grid(self):
         self.surface.fill((0, 0, 0))
         offset = (self.camera.top_left_x, self.camera.top_left_y)
         # iterate over all the cells covered by the camera

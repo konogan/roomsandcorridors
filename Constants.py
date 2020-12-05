@@ -9,7 +9,7 @@ class States(Enum):
     LOAD = 1  # on load
     MENU = 2  # on menu display
     PLAY = 3  # on in-game running
-    ITEM = 4  # on in-gmae inventory management
+    INVENTORY = 4  # on in-game inventory management
 
 
 class Direction(Enum):

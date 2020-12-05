@@ -36,6 +36,9 @@ def check_keydown(event, game):
 
 
 def check_keyup(event, game):
+    if event.key == pygame.K_i:
+        game.switch_inventory()
+    
     if game.state == States.PLAY:
         if event.key == pygame.K_RIGHT:
             game.new_turn()
