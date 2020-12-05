@@ -80,6 +80,17 @@ class World():
         self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
         self.camera.look_at(self.player.coord.x, self.player.coord.y)
 
+        # random place items
+        wf.place_items(self)
+
+    def save(self):
+        # TODO rework on saveformat
+        pass
+
+    def load(self):
+        # TODO from the new saveformat load
+        pass
+
     def player_open_door(self):
         # test 4 directions for a door and reverse his state
         for potential_door_coord in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
@@ -110,31 +121,29 @@ class World():
         self.player.orient(new_orientation)
 
         if current_orientation != new_orientation:
-            # player turn on itself / no move
+            # player turn on itself
             self.messages.player_orient(new_orientation)
 
-        else:
             # player stay on same orientation
-            # it an move
-
             target_cell = self.cell_in_front(
                 self.player.coord.x, self.player.coord.y, self.player.orientation)
 
             if target_cell and target_cell.is_walkable():
                 current_room = self.player.current_room
+            # perform the move
                 self.messages.player_move(new_orientation)
                 self.player.move(target_cell.coord, target_cell.belongs_to)
+
+            # check the player postion against the camera viewport
+            # move the center look if necessary
+            self.camera.look_at(self.player.coord.x,
+                                self.player.coord.y)
 
                 if self.player.current_room != current_room:
                     if self.player.current_room == 0:
                         self.messages.add_message('You enter a corridor')
                     else:
                         self.messages.add_message('You enter a room')
-
-                # check the player postion against the camera viewport
-                # move the center look if necessary
-                self.camera.look_at(self.player.coord.x,
-                                    self.player.coord.y)
 
                 next_target_cell = self.cell_in_front(
                     self.player.coord.x, self.player.coord.y, self.player.orientation)
@@ -152,13 +161,18 @@ class World():
         self.mouse = Coord(int(mouse_x//self.settings.tile_size + self.camera.top_left_x),
                            int(mouse_y//self.settings.tile_size+self.camera.top_left_y))
 
+    def mouse_clicked(self):
+        # inspect world at mouse coordinate
+        print(self.grid[self.mouse.x][self.mouse.y])
+        print(self.grid[self.mouse.x][self.mouse.y].items)
+
     def update(self):
         # update world content
         pass
 
     def update_fov(self, current_turn):
         # update field of view of the player
-        wf.update_fov(self, current_turn)
+        wf.update_fov(self, current_turn, self.player.view_distance)
 
     def render(self):
         self.surface.fill((0, 0, 0))

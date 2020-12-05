@@ -16,7 +16,7 @@ def check_events(game):
             quit_game(game)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_buttons(game, mouse_x, mouse_y)
+            check_click(game, mouse_x, mouse_y)
         elif event.type == pygame.MOUSEMOTION:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             game.world.set_mouse(mouse_x, mouse_y)
@@ -67,10 +67,14 @@ def check_keyup(event, game):
             quit_game(game)
 
 
-def check_buttons(game, mouse_x, mouse_y):
-
+def check_click(game, mouse_x, mouse_y):
     game.world.set_mouse(mouse_x, mouse_y)
+    if game.state == States.PLAY:
+        game.world.mouse_clicked()
 
+
+def check_buttons(game, mouse_x, mouse_y):
+    game.world.set_mouse(mouse_x, mouse_y)
     for button in game.main_menu.buttons:
         button_clicked = button.rect.collidepoint(mouse_x, mouse_y)
         if game.state == States.MENU:

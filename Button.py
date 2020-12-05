@@ -4,10 +4,10 @@ import pygame.ftfont
 
 class Button():
 
-    def __init__(self, id, surface, msg, decy):
+    def __init__(self, ident, surface, msg, decy):
         """This is a button yo"""
         self.surface = surface
-        self.id = id
+        self.ident = ident
         self.hover = False
         self.surface_rect = surface.get_rect()
 

@@ -32,12 +32,12 @@ class Cell():
     def belong_to_room(self, room_id):
         self.is_free = False
         self.belongs_to = room_id
-        self.type = "ROOM"
+        self.type = "ROOM_FLOOR"
 
     def set_corridor(self):
         self.is_free = False
         self.belongs_to = 0
-        self.type = "CORRIDOR"
+        self.type = "CORRIDOR_FLOOR"
 
     def set_door(self, state='CLOSE'):
         self.is_free = False
@@ -108,7 +108,7 @@ class Cell():
         if self.visibility or self.was_discovered:
 
             local_surface = pygame.Surface((tile_size, tile_size))
-            light_surface = pygame.Surface((tile_size, tile_size))
+            #light_surface = pygame.Surface((tile_size, tile_size))
 
             local_rect = pygame.Rect(0, 0, tile_size, tile_size)
 
@@ -122,9 +122,9 @@ class Cell():
             # define style based on type
             if self.type == "WALL":
                 cell_color = My_colors.GREY
-            elif self.type == "ROOM":
+            elif self.type == "ROOM_FLOOR":
                 cell_color = My_colors.WHITE
-            elif self.type == "CORRIDOR":
+            elif self.type == "CORRIDOR_FLOOR":
                 cell_color = My_colors.WHITE
             elif self.type == "DOOR":
                 cell_color = My_colors.GREEN
@@ -168,7 +168,7 @@ class Cell():
                 # solution 3 add a light layer with an alpha
                 # pygame.draw.rect(light_surface, My_colors.HISTORY.value, local_rect)
                 # light_surface.set_alpha((self.distance+5 )* 10)
-                # local_surface.blit(light_surface, local_rect,local_rect)
+                # local_surface.blit(light_surface, local_rect)
 
             else:
                 if self.was_discovered:
@@ -177,7 +177,8 @@ class Cell():
 
             if debug and self.visibility:
                 cell_font = pygame.font.SysFont('arial', 8)
-                number = cell_font.render("{},{}".format(self.coord.x,self.coord.y), True, (0, 0, 255))
+                number = cell_font.render("{},{}".format(
+                    self.coord.x, self.coord.y), True, (0, 0, 255))
                 local_surface.blit(number, local_rect)
 
             # append local cell in world surface

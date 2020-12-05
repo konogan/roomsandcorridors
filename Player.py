@@ -13,6 +13,7 @@ class Player():
         self.coord = Coord(coord_x, coord_y)
         self.orientation = Direction.NORTH
         self.current_room = room_id
+        self.view_distance = 3
 
     def move(self, new_coord, room_id):
         self.current_room = room_id

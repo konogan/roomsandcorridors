@@ -56,37 +56,39 @@ def build_walls(world):
 def place_door(world):
     for i in range(world.grid_size[0]):
         for j in range(world.grid_size[1]):
-            if world.grid[i][j].type == "CORRIDOR":
+            if world.grid[i][j].type == "CORRIDOR_FLOOR":
                 corridor = 0
                 room = 0
                 # 2 walls arround
                 if (world.grid[i-1][j].type == "WALL" and world.grid[i+1][j].type == "WALL") or (world.grid[i][j-1].type == "WALL" and world.grid[i+1][j+1].type == "WALL"):
                     # count corridors
-                    if world.grid[i-1][j].type == "CORRIDOR":
+                    if world.grid[i-1][j].type == "CORRIDOR_FLOOR":
                         corridor += 1
-                    if world.grid[i+1][j].type == "CORRIDOR":
+                    if world.grid[i+1][j].type == "CORRIDOR_FLOOR":
                         corridor += 1
-                    if world.grid[i][j-1].type == "CORRIDOR":
+                    if world.grid[i][j-1].type == "CORRIDOR_FLOOR":
                         corridor += 1
-                    if world.grid[i][j+1].type == "CORRIDOR":
+                    if world.grid[i][j+1].type == "CORRIDOR_FLOOR":
                         corridor += 1
 
                     # count room
-                    if world.grid[i-1][j].type == "ROOM":
+                    if world.grid[i-1][j].type == "ROOM_FLOOR":
                         room += 1
-                    if world.grid[i+1][j].type == "ROOM":
+                    if world.grid[i+1][j].type == "ROOM_FLOOR":
                         room += 1
-                    if world.grid[i][j-1].type == "ROOM":
+                    if world.grid[i][j-1].type == "ROOM_FLOOR":
                         room += 1
-                    if world.grid[i][j+1].type == "ROOM":
+                    if world.grid[i][j+1].type == "ROOM_FLOOR":
                         room += 1
 
                     if corridor == 1 and room == 1 and random.random() < 0.60:
-                        world.grid[i][j].set_door(random.choice(['OPEN','CLOSE']))
+                        world.grid[i][j].set_door(
+                            random.choice(['OPEN', 'CLOSE']))
 
 
 def update_fov(world, current_turn):
 
+def update_fov(world, current_turn, max_distance=10):
     # reinit display of all cells
     # Initially set all tiles to not visible.
     for i in range(world.grid_size[0]):
@@ -98,13 +100,13 @@ def update_fov(world, current_turn):
         x = math.cos(i * 0.01745)
         y = math.sin(i * 0.01745)
 
-        do_fov(world, current_turn, x, y)
+        do_fov(world, current_turn, x, y, max_distance)
 
 
-def do_fov(world, current_turn, x, y):
+def do_fov(world, current_turn, x, y, max_distance):
     origin_x = float(world.player.coord.x) + .5
     origin_y = float(world.player.coord.y) + .5
-    for distance in range(10):
+    for distance in range(max_distance):
         if world.grid[int(origin_x)][int(origin_y)]:
             world.grid[int(origin_x)][int(origin_y)].set_visibility(
                 True, current_turn, distance)
