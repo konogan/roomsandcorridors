@@ -13,7 +13,7 @@ class Messages():
         self.messages = []
         self.surface = surface
         self.font_size = 15
-        self.font = pygame.font.SysFont('arial', self.font_size)
+        self.font = pygame.font.Font('assets/basis33.ttf', self.font_size)
         self.add_message("You arrive in a dark room")
         self.add_message("-------------------------")
         self.add_message("Move with the arrows")
