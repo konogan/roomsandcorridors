@@ -29,6 +29,10 @@ class My_colors(Enum):
     PLAYER = (160, 32, 240)
     HISTORY = (50, 50, 50)
     ITEM = (230, 126, 48)
+    SELECTED = (255, 175, 0)
+    BACKGROUND = (20, 20, 0)
+    BACKGROUND_LIGHT = (50, 50, 20)
+    TEXT = (200, 200, 200)
 
 
 Coord = namedtuple('Coord', 'x y')

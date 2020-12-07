@@ -4,7 +4,8 @@
 # pylint: disable=missing-function-docstring
 
 import pygame
-from Constants import Direction
+from Constants import Direction,My_colors
+
 
 
 class Messages():
@@ -54,12 +55,12 @@ class Messages():
         self.surface.fill((0, 0, 0))
 
         # draw border
-        pygame.draw.line(self.surface, (255, 255, 255), (0, 1),
+        pygame.draw.line(self.surface, My_colors.TEXT.value, (0, 1),
                          (0, self.settings.screen_height))
 
         # display last messages
         for index, msg in enumerate(self.messages[-10:]):
-            message = self.font.render("{}".format(msg), True, (255, 255, 255))
+            message = self.font.render("{}".format(msg), True, My_colors.TEXT.value)
             rect = pygame.Rect(
                 10,
                 500 + index * (self.font_size+3),

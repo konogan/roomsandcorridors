@@ -1,11 +1,10 @@
 # encoding: utf-8
 import pygame.ftfont
-
+from Constants import My_colors
 
 class Button():
 
     def __init__(self, ident, surface, msg, decy):
-        """This is a button yo"""
         self.surface = surface
         self.ident = ident
         self.hover = False
@@ -13,9 +12,9 @@ class Button():
 
         # Set the dimensions and properties of the button.
         self.width, self.height = 500, 50
-        self.button_color = (0, 0, 0)
-        self.button_color_hover = (125, 125, 125)
-        self.text_color = (255, 255, 255)
+        self.button_color = My_colors.BLACK.value
+        self.button_color_hover = My_colors.BACKGROUND_LIGHT.value
+        self.text_color = My_colors.TEXT.value
         self.font = pygame.font.SysFont(None, 48)
 
         # Build the button's rect object and center it.
@@ -23,13 +22,13 @@ class Button():
         self.rect.center = self.surface_rect.center
         self.rect.centery = self.rect.centery + decy
         # The button message needs to be prepped only once.
-        self.prep_msg(msg)
+        self.__prep_msg(msg)
 
-    def prep_msg(self, msg):
+    def __prep_msg(self, msg):
         self.msg_image = self.font.render(
             msg, True, self.text_color, self.button_color)
         self.msg_image_hover = self.font.render(
-            msg, True, self.text_color, self.button_color_hover)
+            msg, True, My_colors.SELECTED.value, self.button_color_hover)
 
         self.msg_image_rect = self.msg_image.get_rect()
         self.msg_image_rect.center = self.rect.center

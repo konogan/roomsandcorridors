@@ -4,7 +4,7 @@
 # pylint: disable=missing-function-docstring
 
 from Button import Button
-
+from Constants import My_colors
 
 class MainMenu:
     def __init__(self, menu_surface, save_exist=False):
@@ -24,7 +24,7 @@ class MainMenu:
         self.buttons.append(quit_button)
 
     def render(self):
-        self.surface.fill((55, 155, 255))
+        self.surface.fill(My_colors.BACKGROUND.value)
 
         for button in self.buttons:
             button.render()
