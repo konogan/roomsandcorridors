@@ -69,11 +69,9 @@ class Game:
                                   self.save_exist)
 
         self.turns = 0
-        self.need_redraw = True
-        self.state = States.PLAY
+        self.new()
 
     def new_turn(self):
-        self.need_redraw = True
         self.turns += 1
 
     def switch_inventory(self):
@@ -84,7 +82,6 @@ class Game:
             self.state = States.INVENTORY
 
     def switch_debug(self):
-        self.need_redraw = True
         if self.world.debug:
             self.world.debug = False
         else:
@@ -99,7 +96,6 @@ class Game:
         with open('world.save') as json_file:
             worldjson = json.load(json_file)
         self.world.from_json(worldjson)
-        self.need_redraw = True
         self.state = States.PLAY
 
     def save(self):
@@ -108,7 +104,6 @@ class Game:
             json.dump(worldjson, outfile)
         print('save')
         self.main_menu.init_buttons(True)
-        self.need_redraw = True
         self.state = States.PLAY
 
     def run(self):
@@ -133,12 +128,13 @@ class Game:
                                                    self.settings.ui_width, 0))
 
             if self.state == States.INVENTORY:
-                self.world.player.render_inventory(self.world.inventory_surface)
+                #update the inventory surface
+                self.world.player.inventory.render(self.world.inventory_surface)
+                #blit it
                 self.screen.blit(self.world.inventory_surface, (0, 0))
 
             if self.state == States.MENU:
                 self.screen.blit(self.main_menu.render(), (0, 0))
-                self.need_redraw = True
 
             # flip display
             pygame.display.flip()
