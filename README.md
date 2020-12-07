@@ -21,8 +21,10 @@ Its an uncomplete roguelike game
 - [x] Implement door states : locked,closed,open. if the door stay open, monster and los can pass thru
 - [x] Door interaction
 - [x] Player Orientation
-- [ ] Items :  Generation, Pickinkg
-- [ ] Inventory management, Drop Items
+- [x] Items :  Generation, Picking
+- [x] Inventory : list of picked items
+- [ ] Inventory : Equipable items, Consommable Items
+- [ ] Inventory : Management, Drop Items
 - [ ] NPC
 - [ ] NPC Ai (A*, Dijkstra, ...)
 - [ ] Combat system melee

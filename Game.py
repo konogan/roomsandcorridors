@@ -25,10 +25,14 @@ class Game:
         self.state = States.LOAD
 
         # geometries
-        screen_size = (self.settings.screen_width, self.settings.screen_height)
-        world_size = (self.settings.screen_width -
-                      self.settings.ui_width, self.settings.screen_height)
-        ui_size = (self.settings.ui_width, self.settings.screen_height)
+        screen_size = (self.settings.screen_width,
+                       self.settings.screen_height)
+
+        world_size = (self.settings.screen_width - self.settings.ui_width,
+                      self.settings.screen_height)
+
+        ui_size = (self.settings.ui_width,
+                   self.settings.screen_height)
 
         self.screen = pygame.display.set_mode(screen_size)
 
@@ -47,20 +51,23 @@ class Game:
         # render surfaces
         self.menu_surface = pygame.Surface(screen_size)     # loading screen
         self.world_surface = pygame.Surface(world_size)     # gamescreen
-        self.inventory_surface = pygame.Surface(world_size)     # gamescreen
+        self.inventory_surface = pygame.Surface(
+            world_size)  # gamescreen inventory
         self.ui_surface = pygame.Surface(ui_size)           # ui bar
 
         # in game messages
         self.messages = Messages(self.settings, self.ui_surface)
 
         # init
-        self.world = World(self.settings, 
+        self.world = World(self.settings,
                            self.messages,
                            self.world_surface,
                            self.inventory_surface,
                            self.camera)
-        self.main_menu = MainMenu(self.menu_surface, self.save_exist)
-        
+
+        self.main_menu = MainMenu(self.menu_surface,
+                                  self.save_exist)
+
         self.turns = 0
         self.need_redraw = True
         self.state = States.PLAY
@@ -69,16 +76,13 @@ class Game:
         self.need_redraw = True
         self.turns += 1
 
-    
     def switch_inventory(self):
-        if self.state==States.INVENTORY:
-            self.state= States.PLAY
-        else :
-            
+        if self.state == States.INVENTORY:
+            self.state = States.PLAY
+        else:
+
             self.state = States.INVENTORY
-    
-    
-    
+
     def switch_debug(self):
         self.need_redraw = True
         if self.world.debug:
@@ -96,7 +100,7 @@ class Game:
             worldjson = json.load(json_file)
         self.world.from_json(worldjson)
         self.need_redraw = True
-        self.state = States.PLAY    
+        self.state = States.PLAY
 
     def save(self):
         worldjson = self.world.to_json()
@@ -126,12 +130,12 @@ class Game:
                 # display
                 self.screen.blit(self.world_surface, (0, 0))
                 self.screen.blit(self.ui_surface, (self.settings.screen_width -
-                                                    self.settings.ui_width, 0))
+                                                   self.settings.ui_width, 0))
 
             if self.state == States.INVENTORY:
-                self.world.render_inventory()
-                self.screen.blit(self.inventory_surface, (0, 0))
-            
+                self.world.player.render_inventory(self.world.inventory_surface)
+                self.screen.blit(self.world.inventory_surface, (0, 0))
+
             if self.state == States.MENU:
                 self.screen.blit(self.main_menu.render(), (0, 0))
                 self.need_redraw = True

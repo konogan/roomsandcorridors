@@ -9,7 +9,7 @@ import math
 from BSD_Generator import BSDGenerator
 
 from Cell import Cell
-from Item import Item, Torch, Chest
+from Item import Torch
 
 
 def make_grid(grid_size):

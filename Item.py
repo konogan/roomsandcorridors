@@ -10,39 +10,52 @@ import pygame
 from Constants import My_colors
 
 
-class Item():
-    def __init__(self, item_type=None, pickable=True):
-        self.type = item_type
-        self.pickable = pickable
+class PickableItem():
+    def __init__(self, name=None):
+        self.name = name
+        self.color = My_colors.ITEM.value
 
     def __repr__(self):
-        return '<Item type='+str(self.type)+'>'
+        return '{}'.format(self.name.lower().capitalize())
 
-    def __str__(self):
-        return str(self.type)
+    def __print__(self):
+        return '{}'.format(self.name.lower().capitalize())
+
+    def __hash__(self):
+        return hash((self.name))
+
+    def __eq__(self, other):
+        try:
+            return self.name == other.name
+        except AttributeError:
+            return NotImplemented
 
     def render_surface(self, tile_size):
         local_surface = pygame.Surface((tile_size, tile_size))
         local_rect = pygame.Rect(0, 0, tile_size, tile_size)
-        cell_color = My_colors.ITEM
-        pygame.draw.rect(local_surface, cell_color.value, local_rect)
+        pygame.draw.rect(local_surface, self.color, local_rect)
         return local_surface
 
 
-class Chest(Item):
+class Torch(PickableItem):
     def __init__(self):
-        Item.__init__(self, 'CHEST')
-        self.content = []
-
-    def add_item(self, item_to_add):
-        self.content.append(item_to_add)
-
-    def pick_item(self, item_to_pick):
-        self.content.remove(item_to_pick)
-        return item_to_pick
+        PickableItem.__init__(self, __class__.__name__)
+        self.color = My_colors.ITEM.value
 
 
-class Torch(Item):
+class Sword(PickableItem):
     def __init__(self):
-        Item.__init__(self, 'TORCH')
-        self.duraction = 20
+        PickableItem.__init__(self, __class__.__name__)
+        self.color = My_colors.ITEM.value
+
+
+class SilverCoin(PickableItem):
+    def __init__(self):
+        PickableItem.__init__(self, __class__.__name__)
+        self.color = My_colors.ITEM.value
+
+
+class CopperCoin(PickableItem):
+    def __init__(self):
+        PickableItem.__init__(self, __class__.__name__)
+        self.color = My_colors.ITEM.value

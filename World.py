@@ -4,9 +4,10 @@
 # pylint: disable=missing-function-docstring
 
 import World_Functions as wf
-from Constants import Coord, Direction
+from Constants import Coord
 from Room import Room
 from Player import Player
+from Item import PickableItem
 
 
 class World():
@@ -117,10 +118,10 @@ class World():
         # pick all items pickable on player location
         for found_item in self.grid[self.player.coord.x][self.player.coord.y].items:
             self.messages.add_message('You pick a '+str(found_item))
-            if found_item.pickable:
+            if isinstance(found_item, PickableItem):
                 self.grid[self.player.coord.x][self.player.coord.y].items.remove(
                     found_item)
-            self.player.pick_item(found_item)
+            self.player.inventory.add(found_item)
 
     def cell_in_front(self, coord_x, coord_y, orientation):
         if self.grid[coord_x + orientation.value[0]][coord_y+orientation.value[1]]:
@@ -171,10 +172,10 @@ class World():
         # interract with the content of the cell
             if self.grid[self.player.coord.x][self.player.coord.y].items:
                 for item in self.grid[self.player.coord.x][self.player.coord.y].items:
-                    if item.type == 'CHEST':
+                    if item == 'CHEST':
                         self.messages.add_message('You find a Chest, (o)pen it up')
                     else :
-                        self.messages.add_message('You find a '+item.type.lower().capitalize() +', (p)ick it up')
+                        self.messages.add_message('You find a '+str(item) +', (p)ick it up')
 
     def set_mouse(self, mouse_x, mouse_y):
         self.mouse = Coord(int(mouse_x//self.settings.tile_size + self.camera.top_left_x),
@@ -192,9 +193,6 @@ class World():
     def update_fov(self, current_turn):
         # update field of view of the player
         wf.update_fov(self, current_turn, self.player.view_distance)
-
-    def render_inventory(self):
-        self.inventory_surface.fill((20, 20, 0))
     
     def render_grid(self):
         self.surface.fill((0, 0, 0))
