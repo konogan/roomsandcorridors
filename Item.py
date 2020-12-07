@@ -14,6 +14,7 @@ class PickableItem():
     def __init__(self, name=None):
         self.name = name
         self.color = My_colors.ITEM.value
+        self.is_selected= False
 
     def __repr__(self):
         return '{}'.format(self.name.lower().capitalize())

@@ -34,4 +34,3 @@ class Inventory():
     def transfer(self, other_inventory):
         # TODO transfer an item betwenn two inventories
         pass
-

@@ -6,7 +6,7 @@
 import pygame
 
 from Constants import Coord, My_colors, Direction
-from Inventory import Inventory
+from PlayerInventory import PlayerInventory
 
 
 class Player():
@@ -15,7 +15,7 @@ class Player():
         self.orientation = Direction.NORTH
         self.current_room = room_id
         self.view_distance = 3
-        self.inventory = Inventory()
+        self.inventory = PlayerInventory()
         self.font_size = 15
         self.font = pygame.font.SysFont('arial', self.font_size)
 
@@ -31,8 +31,8 @@ class Player():
         # available slot in player ?
         # auto equip sword ? torch ? shield ?
 
-        if item.type == "TORCH":
-            self.view_distance = 8
+        # if item.type == "TORCH":
+        #     self.view_distance = 8
 
         self.inventory.add(item)
 
@@ -73,17 +73,3 @@ class Player():
 
         world_surface.blit(rotated_surface, world_rect)
 
-    def render_inventory(self, inventory_surface):
-        inventory_surface.fill((20, 20, 0))
-        index = 0
-        while index < len(self.inventory.items):
-            message = self.font.render("{}".format(str(self.inventory.items[index]) + "->" + str(
-                self.inventory.quantities[index])), True, (255, 255, 255))
-            rect = pygame.Rect(
-                10,
-                10 + index * (self.font_size+3),
-                inventory_surface.get_width(),
-                inventory_surface.get_height())
-            inventory_surface.blit(message, rect)
-            index += 1
-        

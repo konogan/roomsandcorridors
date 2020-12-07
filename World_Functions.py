@@ -104,7 +104,7 @@ def place_items(world):
     for i in range(world.grid_size[0]):
         for j in range(world.grid_size[1]):
             if world.grid[i][j].type == "ROOM_FLOOR":
-                if random.random() < 0.03:
+                if random.random() < 0.05:
                     new_item = Torch()
                     world.grid[i][j].items.append(new_item)
 
