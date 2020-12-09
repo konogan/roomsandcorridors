@@ -2,3 +2,7 @@ __pycache__
 *.save
 .vscode
 .idea
+
+
+__init__.py
+save/*

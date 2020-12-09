@@ -2,6 +2,10 @@
 
 class Camera():
     def __init__(self, world):
+        """
+        Args:
+            world:
+        """
         self.width_display = world.settings.screen_width - world.settings.ui_width
         self.height_display = world.settings.screen_height
         self.width_grid = int(
@@ -18,6 +22,11 @@ class Camera():
         return "<Camera lookAt(x={},y={}) tl(x={},y={}) br(x={},y={})>".format(self.look_at_x, self.look_at_y, self.top_left_x, self.top_left_y, self.bottom_right_x, self.bottom_right_y)
 
     def look_at(self, position_x, position_y):
+        """
+        Args:
+            position_x:
+            position_y:
+        """
         self.look_at_x = position_x
         self.look_at_y = position_y
         self.top_left_x = self.look_at_x-self.center_shift_x

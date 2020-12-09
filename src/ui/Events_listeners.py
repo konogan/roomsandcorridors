@@ -4,13 +4,19 @@
 # pylint: disable=missing-function-docstring
 
 import sys
+
 import pygame
-from Constants import States, Direction
+
+from src.Constants import States, Direction
 
 
 def check_events(game):
     # respond to events
-    # delegate to differnet module
+    # delegate to different module
+    """
+    Args:
+        game:
+    """
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit_game(game)
@@ -22,12 +28,17 @@ def check_events(game):
             game.world.set_mouse(mouse_x, mouse_y)
             check_buttons_hover(game, mouse_x, mouse_y)
         elif event.type == pygame.KEYDOWN:
-            check_keydown(event, game)
+            check_key_down(event, game)
         elif event.type == pygame.KEYUP:
-            check_keyup(event, game)
+            check_key_up(event, game)
 
 
-def check_keydown(event, game):
+def check_key_down(event, game):
+    """
+    Args:
+        event:
+        game:
+    """
     if event.key == pygame.K_ESCAPE:
         if game.state == States.PLAY:
             pause_game(game)
@@ -35,7 +46,12 @@ def check_keydown(event, game):
             play_game(game)
 
 
-def check_keyup(event, game):
+def check_key_up(event, game):
+    """
+    Args:
+        event:
+        game:
+    """
     if event.key == pygame.K_i:
         game.switch_inventory()
     
@@ -73,12 +89,24 @@ def check_keyup(event, game):
 
 
 def check_click(game, mouse_x, mouse_y):
+    """
+    Args:
+        game:
+        mouse_x:
+        mouse_y:
+    """
     game.world.set_mouse(mouse_x, mouse_y)
     if game.state == States.PLAY:
         game.world.mouse_clicked()
 
 
 def check_buttons(game, mouse_x, mouse_y):
+    """
+    Args:
+        game:
+        mouse_x:
+        mouse_y:
+    """
     game.world.set_mouse(mouse_x, mouse_y)
     for button in game.main_menu.buttons:
         button_clicked = button.rect.collidepoint(mouse_x, mouse_y)
@@ -95,6 +123,12 @@ def check_buttons(game, mouse_x, mouse_y):
 
 
 def check_buttons_hover(game, mouse_x, mouse_y):
+    """
+    Args:
+        game:
+        mouse_x:
+        mouse_y:
+    """
     if game.state == States.MENU:
         for button in game.main_menu.buttons:
             button_hover = button.rect.collidepoint(mouse_x, mouse_y)
@@ -105,24 +139,44 @@ def check_buttons_hover(game, mouse_x, mouse_y):
 
 
 def play_game(game):
+    """
+    Args:
+        game:
+    """
     game.state = States.PLAY
 
 
 def load_game(game):
+    """
+    Args:
+        game:
+    """
     game.state = States.LOAD
     if game.save_exist:
         game.load()
 
 
 def new_game(game):
+    """
+    Args:
+        game:
+    """
     game.new()
 
 
 def pause_game(game):
+    """
+    Args:
+        game:
+    """
     game.state = States.MENU
 
 
 def quit_game(game):
+    """
+    Args:
+        game:
+    """
     if game.state == States.MENU:
         sys.exit()
     else:

@@ -1,29 +1,36 @@
 # encoding: utf-8
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-class-docstring
-# pylint: disable=missing-function-docstring
 
 import random
 
-from Room import Room
-from Constants import Coord
+from src.world.Room import Room
 
 
-
-class BSDGenerator:
+class Bsd:
     def __init__(self, world, threshold):
+        """
+        Args:
+            world:
+            threshold:
+        """
         self.world = world
         self.threshold = threshold
         self.width = world.grid_size[0]
         self.height = world.grid_size[1]
         self.leaves = []
         """ Make the map """
-        self.__BSD_split(1, 1, self.height - 1, self.width - 1)
+        self.__split(1, 1, self.height - 1, self.width - 1)
         self.__dig_rooms()
         self.__connect_rooms()
 
-    def __BSD_split(self, min_row, min_col, max_row, max_col):
+    def __split(self, min_row, min_col, max_row, max_col):
         # We want to keep splitting until the sections get down to the threshold
+        """
+        Args:
+            min_row:
+            min_col:
+            max_row:
+            max_col:
+        """
         seg_height = max_row - min_row
         seg_width = max_col - min_col
 
@@ -41,22 +48,32 @@ class BSDGenerator:
                 self.__split_on_vertical(min_row, min_col, max_row, max_col)
 
     def __split_on_horizontal(self, min_row, min_col, max_row, max_col):
+        """
+        Args:
+            min_row:
+            min_col:
+            max_row:
+            max_col:
+        """
         split = (min_row + max_row) // 2 + random.choice((-2, -1, 0, 1, 2))
-        self.__BSD_split(min_row, min_col, split, max_col)
-        self.__BSD_split(split + 1, min_col, max_row, max_col)
+        self.__split(min_row, min_col, split, max_col)
+        self.__split(split + 1, min_col, max_row, max_col)
 
     def __split_on_vertical(self, min_row, min_col, max_row, max_col):
+        """
+        Args:
+            min_row:
+            min_col:
+            max_row:
+            max_col:
+        """
         split = (min_col + max_col) // 2 + random.choice((-2, -1, 0, 1, 2))
-        self.__BSD_split(min_row, min_col, max_row, split)
-        self.__BSD_split(min_row, split + 1, max_row, max_col)
+        self.__split(min_row, min_col, max_row, split)
+        self.__split(min_row, split + 1, max_row, max_col)
 
     def __dig_rooms(self):
         room_id = 0
         for leaf in self.leaves:
-            # skip 40%
-            # if random.random() > 0.60:
-            #     continue
-
             room_id += 1
 
             # size of zone
@@ -81,27 +98,33 @@ class BSDGenerator:
                 room_x = leaf[1]
 
             # append room to the world
-            #print(f"Create {room_id} : ({room_x}, {room_y}) w={room_width} h={room_height} ")
             room = Room(room_x, room_y, room_width, room_height, room_id)
-            
 
             # append room to the grid
             for r in range(room_y, room_y + room_height):
                 for c in range(room_x, room_x + room_width):
-                    room.append_cell(Coord(c,r))
                     self.world.grid[c][r].belong_to_room(room_id)
-                    
+
             self.world.rooms.append(room)
 
-    def __get_center_of_leaf(self, leaf):
+    @staticmethod
+    def __get_center_of_leaf(leaf):
+        """
+        Args:
+            leaf:
+        """
         section_width = leaf[3] - leaf[1]
         section_height = leaf[2] - leaf[0]
-        return (int(leaf[1] + section_width//2), int(leaf[0] + section_height//2))
+        return int(leaf[1] + section_width // 2), int(leaf[0] + section_height // 2)
 
-    def __dig_coridors(self, leaf1, leaf2):
+    def __dig_corridors(self, leaf1, leaf2):
+        """
+        Args:
+            leaf1:
+            leaf2:
+        """
         center1 = self.__get_center_of_leaf(leaf1)
         center2 = self.__get_center_of_leaf(leaf2)
-        # print(center1,center2)
 
         # draw Horizontal
         if center1[0] != center2[0]:
@@ -134,4 +157,4 @@ class BSDGenerator:
     def __connect_rooms(self):
         for i, _ in enumerate(self.leaves):
             if i != 0:
-                self.__dig_coridors(self.leaves[i-1], self.leaves[i])
+                self.__dig_corridors(self.leaves[i - 1], self.leaves[i])

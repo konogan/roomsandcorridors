@@ -1,20 +1,17 @@
 # encoding: utf-8
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-class-docstring
-# pylint: disable=missing-function-docstring
 
-import json
 import os.path
+
 import pygame
 
-from Messages import Messages
-import Events_listeners
-
-from Settings import Settings
-from Constants import States
-from Camera import Camera
-from World import World
-from MainMenu import MainMenu
+from src.Backup import Backup
+from src.Constants import States
+from src.Settings import Settings
+from src.ui import Events_listeners
+from src.ui.Camera import Camera
+from src.ui.MainMenu import MainMenu
+from src.ui.Messages import Messages
+from src.world.World import World
 
 pygame.init()
 
@@ -36,11 +33,11 @@ class Game:
 
         self.screen = pygame.display.set_mode(screen_size)
 
-        self.center = (int((self.settings.screen_width-self.settings.ui_width) //
+        self.center = (int((self.settings.screen_width - self.settings.ui_width) //
                            2), int(self.settings.screen_height // 2))
 
         pygame.display.set_caption("rooms & corridors")
-        game_icon = pygame.image.load('assets/logo.png')
+        game_icon = pygame.image.load('src/assets/logo.png')
         pygame.display.set_icon(game_icon)
 
         self.save_exist = os.path.isfile('world.save')
@@ -49,11 +46,11 @@ class Game:
         self.camera = Camera(self)
 
         # render surfaces
-        self.menu_surface = pygame.Surface(screen_size)     # loading screen
-        self.world_surface = pygame.Surface(world_size)     # gamescreen
+        self.menu_surface = pygame.Surface(screen_size)  # loading screen
+        self.world_surface = pygame.Surface(world_size)  # game screen
         self.inventory_surface = pygame.Surface(
-            world_size)  # gamescreen inventory
-        self.ui_surface = pygame.Surface(ui_size)           # ui bar
+            world_size)  # game screen inventory
+        self.ui_surface = pygame.Surface(ui_size)  # ui bar
 
         # in game messages
         self.messages = Messages(self.settings, self.ui_surface)
@@ -93,17 +90,12 @@ class Game:
         self.save()
 
     def load(self):
-        with open('world.save') as json_file:
-            worldjson = json.load(json_file)
-        self.world.from_json(worldjson)
-        self.state = States.PLAY
+        print('Loading world')
 
     def save(self):
-        worldjson = self.world.to_json()
-        with open('world.save', 'w') as outfile:
-            json.dump(worldjson, outfile)
-        print('save')
-        self.main_menu.init_buttons(True)
+        print('Saving generated world')
+        backup = Backup()
+        backup.save(self.world)
         self.state = States.PLAY
 
     def run(self):
@@ -113,7 +105,6 @@ class Game:
             Events_listeners.check_events(self)
 
             if self.state == States.PLAY:
-
                 self.world.update()
 
                 self.world.update_fov(self.turns)
@@ -128,9 +119,10 @@ class Game:
                                                    self.settings.ui_width, 0))
 
             if self.state == States.INVENTORY:
-                #update the inventory surface
-                self.world.player.inventory.render(self.world.inventory_surface)
-                #blit it
+                # update the inventory surface
+                self.world.player.inventory.render(
+                    self.world.inventory_surface)
+                # blit it
                 self.screen.blit(self.world.inventory_surface, (0, 0))
 
             if self.state == States.MENU:

@@ -1,22 +1,26 @@
 # encoding: utf-8
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-class-docstring
-# pylint: disable=missing-function-docstring
+
 
 
 import pygame
 
-
-from Constants import Coord, My_colors
+from src.Constants import Coord, MyColors
 
 
 class Cell():
-
+    """A cell represent a location in the grid
+    """
     def __init__(self, coord_x, coord_y):
+        """
+        Args:
+            coord_x:
+            coord_y:
+        """
         self.coord = Coord(coord_x, coord_y)
         self.is_free = True
         self.belongs_to = 0
         self.type = None
+        self.save_type = " "
         self.visibility = False
         self.was_discovered = False
         self.last_time_was_seen = 0
@@ -31,16 +35,29 @@ class Cell():
         return 'Cell(coord ('+str(self.coord.x)+','+str(self.coord.y)+'), type='+str(self.type) + ', belongsto='+str(self.belongs_to) + ')'
 
     def belong_to_room(self, room_id):
-        self.is_free = False
+        """
+        Args:
+            room_id:
+        """
         self.belongs_to = room_id
+        self.set_floor()
+
+    def set_floor(self):
+        self.is_free = False
         self.type = "ROOM_FLOOR"
+        self.save_type = "."
 
     def set_corridor(self):
         self.is_free = False
         self.belongs_to = 0
         self.type = "CORRIDOR_FLOOR"
+        self.save_type = "c"
 
     def set_door(self, state='CLOSE'):
+        """
+        Args:
+            state:
+        """
         self.is_free = False
         self.state = state
         self.type = "DOOR"
@@ -48,13 +65,16 @@ class Cell():
     def open(self):
         self.is_free = True
         self.state = "OPEN"
+        self.save_type = "O"
 
     def close(self):
         self.is_free = False
         self.state = "CLOSE"
+        self.save_type = "C"
 
     def set_wall(self):
         self.type = "WALL"
+        self.save_type = "#"
 
     def is_wall(self):
         return self.type == "WALL"
@@ -72,6 +92,12 @@ class Cell():
         return self.type == "WALL" or (self.type == "DOOR" and self.state == "CLOSE")
 
     def set_visibility(self, visibility, current_turn, distance_from_player=0):
+        """
+        Args:
+            visibility:
+            current_turn:
+            distance_from_player:
+        """
         self.visibility = visibility
         self.distance = distance_from_player
         if visibility:
@@ -96,6 +122,10 @@ class Cell():
         return export
 
     def from_json(self, json_data):
+        """
+        Args:
+            json_data:
+        """
         self.is_free = json_data['f']
         self.belongs_to = json_data['b']
         self.type = json_data['t']
@@ -106,6 +136,14 @@ class Cell():
 
     def render(self, world_surface, tile_size, offset=(0, 0), debug=False, is_under_mouse=False):
         # only render if necessary
+        """
+        Args:
+            world_surface:
+            tile_size:
+            offset:
+            debug:
+            is_under_mouse:
+        """
         if self.visibility or self.was_discovered:
 
             local_surface = pygame.Surface((tile_size, tile_size))
@@ -122,17 +160,17 @@ class Cell():
 
             # define style based on type
             if self.type == "WALL":
-                cell_color = My_colors.GREY
+                cell_color = MyColors.GREY
             elif self.type == "ROOM_FLOOR":
-                cell_color = My_colors.WHITE
+                cell_color = MyColors.WHITE
             elif self.type == "CORRIDOR_FLOOR":
-                cell_color = My_colors.WHITE
+                cell_color = MyColors.WHITE
             elif self.type == "DOOR":
-                cell_color = My_colors.GREEN
+                cell_color = MyColors.GREEN
             else:
-                cell_color = My_colors.BLACK
+                cell_color = MyColors.BLACK
 
-            cell_color_in_memory = My_colors.HISTORY
+            cell_color_in_memory = MyColors.HISTORY
 
             # drawing local cell
             if self.visibility:
@@ -153,7 +191,7 @@ class Cell():
                 # mouse pass
                 if is_under_mouse and debug:
                     pygame.draw.rect(
-                        local_surface, My_colors.RED.value, local_rect, 1)
+                        local_surface, MyColors.RED.value, local_rect, 1)
 
                 # light pass for the cell based on distance of the player
 

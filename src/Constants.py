@@ -1,11 +1,11 @@
 
 # encoding: utf-8
-from enum import Enum
 from collections import namedtuple
+from enum import Enum
 
 
 class States(Enum):
-    INIT = 1  # on lauch
+    INIT = 1  # on launch
     LOAD = 1  # on load
     MENU = 2  # on menu display
     PLAY = 3  # on in-game running
@@ -19,7 +19,7 @@ class Direction(Enum):
     WEST = (-1, 0)
 
 
-class My_colors(Enum):
+class MyColors(Enum):
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     BLUE = (0, 0, 255)

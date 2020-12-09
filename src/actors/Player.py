@@ -5,12 +5,18 @@
 
 import pygame
 
-from Constants import Coord, My_colors, Direction
-from PlayerInventory import PlayerInventory
+from src.Constants import Coord, MyColors, Direction
+from src.actors.PlayerInventory import PlayerInventory
 
 
-class Player():
+class Player:
     def __init__(self, coord_x, coord_y, room_id):
+        """
+        Args:
+            coord_x:
+            coord_y:
+            room_id:
+        """
         self.coord = Coord(coord_x, coord_y)
         self.orientation = Direction.NORTH
         self.current_room = room_id
@@ -20,45 +26,69 @@ class Player():
         self.font = pygame.font.SysFont('arial', self.font_size)
 
     def move(self, new_coord, room_id):
+        """
+        Args:
+            new_coord:
+            room_id:
+        """
         self.current_room = room_id
         self.coord = new_coord
 
     def orient(self, direction):
+        """
+        Args:
+            direction:
+        """
         self.orientation = direction
 
     def pick_item(self, item):
-        # TODO picked item are equipable ?
+        # TODO picked item that can be equipped ?
         # available slot in player ?
         # auto equip sword ? torch ? shield ?
 
         # if item.type == "TORCH":
         #     self.view_distance = 8
 
+        """
+        Args:
+            item:
+        """
         self.inventory.add(item)
 
     def drop_item(self, item):
         # TODO drop item on the world at current location
         # for the moment remove the item from the inventory
+        """
+        Args:
+            item:
+        """
         self.inventory.remove(item)
 
     def render(self, world_surface, tile_size, offset=(0, 0)):
+        """
+        Args:
+            world_surface:
+            tile_size:
+            offset:
+        """
+        angle = 0
         local_rect = pygame.Rect(0, 0, tile_size, tile_size)
 
         local_surface = pygame.Surface((tile_size, tile_size))
 
         world_rect = pygame.Rect(
-            (self.coord.x-offset[0])*tile_size,
-            (self.coord.y-offset[1])*tile_size,
+            (self.coord.x - offset[0]) * tile_size,
+            (self.coord.y - offset[1]) * tile_size,
             tile_size,
             tile_size
         )
 
-        pygame.draw.rect(local_surface, My_colors.WHITE.value, local_rect)
-        pygame.draw.polygon(local_surface, My_colors.PLAYER.value, (
-            (int(tile_size//2), 0),
+        pygame.draw.rect(local_surface, MyColors.WHITE.value, local_rect)
+        pygame.draw.polygon(local_surface, MyColors.PLAYER.value, (
+            (int(tile_size // 2), 0),
             (0, tile_size),
             (tile_size, tile_size))
-        )
+                            )
 
         if self.orientation == Direction.NORTH:
             angle = 0
@@ -72,4 +102,3 @@ class Player():
         rotated_surface = pygame.transform.rotate(local_surface, angle)
 
         world_surface.blit(rotated_surface, world_rect)
-
