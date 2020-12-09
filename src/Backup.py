@@ -2,7 +2,7 @@
 import os
 
 from src.world.Cell import Cell
-
+from src.world.Room import Room
 
 class Backup:
     """Backup class handle the save en restore of the world"""
@@ -76,7 +76,7 @@ class Backup:
             # save the rooms
             row_str = ""
             for _, room in enumerate(rooms):
-                row_str += "{}:{},{}-{},{}|".format(
+                row_str += "{}:{},{},{},{}|".format(
                     str(room.room_id),
                     str(room.coord.x),
                     str(room.coord.y),
@@ -134,9 +134,9 @@ class Backup:
             world:
         """
         initial_grid = world.grid
-        file1 = open("{}/topology.save".format(self.save_path), 'r')
+        topology_file = open("{}/topology.save".format(self.save_path), 'r')
         y = 0
-        for line in file1:
+        for line in topology_file:
             for x, char in enumerate(line.strip()):
                 cell = Cell(x, y)
                 if char == ".":
@@ -153,14 +153,28 @@ class Backup:
                     pass
                 initial_grid[x][y] = cell
             y += 1
-        file1.close()
+        topology_file.close()
+        world.grid = initial_grid
 
     def __load_rooms(self, world):
         """
         Args:
-            world:
+            world: world instance
         """
-        pass
+        room_file = open("{}/rooms.save".format(self.save_path), 'r')
+        line = room_file.readline()
+        for room_save in line.split('|'):
+            #1:1,1,4,7 room_id:x,y,w,h
+            room=room_save.split(':')
+            coord= room[1].split(',')
+            newroom = Room(coord[0], coord[1], coord[2], coord[3], room[0])
+            
+            for coord_x in range(room.coord.x, room.coord.x + room.width):
+                for coord_y in range(room.coord.y, room.coord.y + room.height):
+                    world.grid[coord_x][coord_y].belong_to_room(newroom.room_id)
+
+            world.rooms.append(newroom)
+        room_file.close()
 
     def __load_items(self, world):
         """

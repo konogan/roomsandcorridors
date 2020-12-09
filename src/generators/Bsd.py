@@ -100,12 +100,12 @@ class Bsd:
             # append room to the world
             room = Room(room_x, room_y, room_width, room_height, room_id)
 
-            # append room to the grid
-            for r in range(room_y, room_y + room_height):
-                for c in range(room_x, room_x + room_width):
-                    self.world.grid[c][r].belong_to_room(room_id)
+            for coord_x in range(room.coord.x, room.coord.x + room.width):
+                for coord_y in range(room.coord.y, room.coord.y + room.height):
+                    self.world.grid[coord_x][coord_y].belong_to_room(room.room_id)
 
             self.world.rooms.append(room)
+            
 
     @staticmethod
     def __get_center_of_leaf(leaf):

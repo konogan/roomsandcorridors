@@ -108,31 +108,6 @@ class Cell():
             if current_turn - self.last_time_was_seen > 100:
                 self.was_discovered = False
 
-    def to_json(self):
-        export = {}
-        export['x'] = self.coord.x
-        export['y'] = self.coord.y
-        export['f'] = self.is_free
-        export['b'] = self.belongs_to
-        export['t'] = self.type
-        export['v'] = self.visibility
-        export['d'] = self.was_discovered
-        export['s'] = self.last_time_was_seen
-        export['a'] = self.state
-        return export
-
-    def from_json(self, json_data):
-        """
-        Args:
-            json_data:
-        """
-        self.is_free = json_data['f']
-        self.belongs_to = json_data['b']
-        self.type = json_data['t']
-        self.visibility = json_data['v']
-        self.was_discovered = json_data['d']
-        self.last_time_was_seen = json_data['s']
-        self.state = json_data['a']
 
     def render(self, world_surface, tile_size, offset=(0, 0), debug=False, is_under_mouse=False):
         # only render if necessary

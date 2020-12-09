@@ -1,13 +1,9 @@
 # encoding: utf-8
-import math
-import random
 
-from src.Constants import Coord
+from src.Constants import Coord, Direction
 from src.actors.Player import Player
-from src.generators.Bsd import Bsd
-from src.items.Item import *
-from src.world.Cell import Cell
-
+from src.items.Item import PickableItem
+from src.world.Utils import *
 
 class World:
 
@@ -61,41 +57,6 @@ class World:
         self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
         self.camera.look_at(self.player.coord.x, self.player.coord.x)
 
-    def to_json(self):
-        export = {"rooms": []}
-        for room in self.rooms:
-            export["rooms"].append(room.to_json())
-        export["grid"] = []
-        for i in range(self.grid_size[0]):
-            for j in range(self.grid_size[1]):
-                if self.grid[i][j].type:
-                    export["grid"].append(self.grid[i][j].to_json())
-        return export
-
-    def from_json(self, world_json):
-        # populate the rooms
-        """
-        Args:
-            world_json:
-        """
-        # self.rooms = []
-        # for r in world_json['rooms']:
-        #     self.rooms.append(Room(r['x'], r['y'], r['w'], r['h'], r['i']))
-        #
-        # # populate the grid
-        # self.grid = make_grid(self.grid_size)
-        # for g in world_json['grid']:
-        #     self.grid[g['x']][g['y']].from_json(g)
-        #
-        # # for the moment the player respawn in the first room
-        # # TODO : get player from save file
-        # spawn = self.rooms[0].get_center()
-        # self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
-        # self.camera.look_at(self.player.coord.x, self.player.coord.y)
-        #
-        # # random place items
-        # place_items(self)
-
     def player_open_door(self):
         # test 4 directions for a door and reverse his state
         for potential_door_coord in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
@@ -125,7 +86,7 @@ class World:
                     found_item)
             self.player.inventory.add(found_item)
 
-    def cell_in_front(self, coord_x, coord_y, orientation):
+    def cell_in_front(self, coord_x, coord_y, orientation: Direction):
         """
         Args:
             coord_x:
@@ -135,8 +96,7 @@ class World:
         if self.grid[coord_x + orientation.value[0]][coord_y + orientation.value[1]]:
             return self.grid[coord_x + orientation.value[0]][coord_y + orientation.value[1]]
 
-    def move_player_intent(self, new_orientation):
-
+    def move_player_intent(self, new_orientation: Direction):
         """
         Args:
             new_orientation:
@@ -185,11 +145,13 @@ class World:
             if self.grid[self.player.coord.x][self.player.coord.y].items:
                 for item in self.grid[self.player.coord.x][self.player.coord.y].items:
                     if item == 'CHEST':
-                        self.messages.add_message('You find a Chest, (o)pen it up')
+                        self.messages.add_message(
+                            'You find a Chest, (o)pen it up')
                     else:
-                        self.messages.add_message('You find a ' + str(item) + ', (p)ick it up')
+                        self.messages.add_message(
+                            'You find a ' + str(item) + ', (p)ick it up')
 
-    def set_mouse(self, mouse_x, mouse_y):
+    def set_mouse(self, mouse_x: int, mouse_y: int):
         """
         Args:
             mouse_x:
@@ -207,7 +169,7 @@ class World:
         # update world content
         pass
 
-    def update_fov(self, current_turn):
+    def update_fov(self, current_turn: int):
         # update field of view of the player
         """
         Args:
@@ -235,163 +197,3 @@ class World:
 
         # render the player
         self.player.render(self.surface, self.settings.tile_size, offset)
-
-
-def make_grid(grid_size):
-    """
-    Args:
-        grid_size:
-    """
-    cols = grid_size[0]
-    rows = grid_size[1]
-    grid = []
-    for i in range(cols + 1):
-        grid.append([])
-        for j in range(rows + 1):
-            grid[i].append(Cell(i, j))
-    return grid
-
-
-def randomize_rooms(world):
-    """
-    Args:
-        world:
-    """
-    Bsd(world, 12)
-
-
-def build_walls(world):
-    # iterate over all FREE cells
-    """
-    Args:
-        world:
-    """
-    for i in range(world.grid_size[0]):
-        for j in range(world.grid_size[1]):
-            if world.grid[i][j].is_free:
-                need_a_wall = False
-                if not world.grid[i - 1][j].is_free:
-                    need_a_wall = True
-                if not world.grid[i + 1][j].is_free:
-                    need_a_wall = True
-                if not world.grid[i][j - 1].is_free:
-                    need_a_wall = True
-                if not world.grid[i][j + 1].is_free:
-                    need_a_wall = True
-                if not world.grid[i - 1][j + 1].is_free:
-                    need_a_wall = True
-                if not world.grid[i - 1][j - 1].is_free:
-                    need_a_wall = True
-                if not world.grid[i + 1][j - 1].is_free:
-                    need_a_wall = True
-                if not world.grid[i + 1][j + 1].is_free:
-                    need_a_wall = True
-
-                if need_a_wall:
-                    world.grid[i][j].set_wall()
-
-
-def place_door(world):
-    """
-    Args:
-        world:
-    """
-    for i in range(world.grid_size[0]):
-        for j in range(world.grid_size[1]):
-            if world.grid[i][j].type == "CORRIDOR_FLOOR":
-                corridor = 0
-                room = 0
-                # 2 walls around
-                if (world.grid[i - 1][j].type == "WALL" and world.grid[i + 1][j].type == "WALL") or (
-                        world.grid[i][j - 1].type == "WALL" and world.grid[i + 1][j + 1].type == "WALL"):
-                    # count corridors
-                    if world.grid[i - 1][j].type == "CORRIDOR_FLOOR":
-                        corridor += 1
-                    if world.grid[i + 1][j].type == "CORRIDOR_FLOOR":
-                        corridor += 1
-                    if world.grid[i][j - 1].type == "CORRIDOR_FLOOR":
-                        corridor += 1
-                    if world.grid[i][j + 1].type == "CORRIDOR_FLOOR":
-                        corridor += 1
-
-                    # count room
-                    if world.grid[i - 1][j].type == "ROOM_FLOOR":
-                        room += 1
-                    if world.grid[i + 1][j].type == "ROOM_FLOOR":
-                        room += 1
-                    if world.grid[i][j - 1].type == "ROOM_FLOOR":
-                        room += 1
-                    if world.grid[i][j + 1].type == "ROOM_FLOOR":
-                        room += 1
-
-                    if corridor == 1 and room == 1 and random.random() < 0.60:
-                        world.grid[i][j].set_door(
-                            random.choice(['OPEN', 'CLOSE']))
-
-
-# def random_item():
-#     # generate a random item
-#     if random.random() < 0.90:
-#         ret = Torch()
-#     else:
-#         ret = Chest()
-#         for _ in range(random.randint(0, 4)):
-#             if random.random() < 0.50:
-#                 ret.add_item(Torch())
-#     return ret
-
-
-def place_items(world):
-    # place randomly items in the world
-    """
-    Args:
-        world:
-    """
-    for i in range(world.grid_size[0]):
-        for j in range(world.grid_size[1]):
-            if world.grid[i][j].type == "ROOM_FLOOR":
-                if random.random() < 0.05:
-                    new_item = Torch()
-                    world.grid[i][j].items.append(new_item)
-
-
-def update_fov(world, current_turn, max_distance=10):
-    # init display of all cells
-    # Initially set all tiles to not visible.
-    """
-    Args:
-        world:
-        current_turn:
-        max_distance:
-    """
-    for i in range(world.grid_size[0]):
-        for j in range(world.grid_size[1]):
-            world.grid[i][j].set_visibility(False, current_turn)
-
-    # field of view around the player
-    for i in range(0, 360):
-        x = math.cos(i * 0.01745)
-        y = math.sin(i * 0.01745)
-
-        do_fov(world, current_turn, x, y, max_distance)
-
-
-def do_fov(world, current_turn, x, y, max_distance):
-    """
-    Args:
-        world:
-        current_turn:
-        x:
-        y:
-        max_distance:
-    """
-    origin_x = float(world.player.coord.x) + .5
-    origin_y = float(world.player.coord.y) + .5
-    for distance in range(max_distance):
-        if world.grid[int(origin_x)][int(origin_y)]:
-            world.grid[int(origin_x)][int(origin_y)].set_visibility(
-                True, current_turn, distance)
-            if world.grid[int(origin_x)][int(origin_y)].block_fov():
-                return
-            origin_x += x
-            origin_y += y
