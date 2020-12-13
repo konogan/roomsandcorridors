@@ -6,7 +6,8 @@ from src.Constants import MyColors
 
 class Button:
     """Represent a button in the interface
-    """    
+    """
+
     def __init__(self, button_id, surface, msg, offset_y):
         """
         Args:
@@ -30,7 +31,8 @@ class Button:
         # Build the button's rect object and center it.
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = self.surface_rect.center
-        # self.rect.centery = self.rect.centery + offset_y
+        self.rect.centery = self.rect.centery + offset_y
+
         # The button message needs to be prepped only once.
         self.__prep_msg(msg)
 

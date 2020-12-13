@@ -2,25 +2,29 @@
 
 import random
 
+from src.world.helper_grid import init_grid
 from src.world.Room import Room
-
+from src.world.Cell import Cell
 
 class Bsd:
-    def __init__(self, world, threshold):
-        """
-        Args:
-            world:
-            threshold:
-        """
-        self.world = world
+    def __init__(self, grid_size: (int, int), threshold):
         self.threshold = threshold
-        self.width = world.grid_size[0]
-        self.height = world.grid_size[1]
+        self.width = grid_size[0]
+        self.height = grid_size[1]
+        self.bsd_grid = init_grid(grid_size)
+        self.bsd_rooms = []
         self.leaves = []
-        """ Make the map """
+
+    def run(self):
         self.__split(1, 1, self.height - 1, self.width - 1)
         self.__dig_rooms()
         self.__connect_rooms()
+
+    def get_grid(self) -> [[Cell]]:
+        return self.bsd_grid
+
+    def get_rooms(self) -> [Room]:
+        return self.bsd_rooms
 
     def __split(self, min_row, min_col, max_row, max_col):
         # We want to keep splitting until the sections get down to the threshold
@@ -102,13 +106,11 @@ class Bsd:
 
             for coord_x in range(room.coord.x, room.coord.x + room.width):
                 for coord_y in range(room.coord.y, room.coord.y + room.height):
-                    self.world.grid[coord_x][coord_y].belong_to_room(room.room_id)
-
-            self.world.rooms.append(room)
-            
+                    self.bsd_grid[coord_x][coord_y].belong_to_room(room.room_id)
+            self.bsd_rooms.append(room)
 
     @staticmethod
-    def __get_center_of_leaf(leaf):
+    def __get_center_of_leaf(leaf) ->(int,int):
         """
         Args:
             leaf:
@@ -137,8 +139,8 @@ class Bsd:
                 end = center1[0]
 
             for x in range(start, end):
-                if self.world.grid[x][y].is_free:
-                    self.world.grid[x][y].set_corridor()
+                if self.bsd_grid[x][y].is_free:
+                    self.bsd_grid[x][y].set_corridor()
 
         # draw Vertical
         if center1[1] != center2[1]:
@@ -151,8 +153,8 @@ class Bsd:
                 end = center1[1]
 
             for y in range(start, end):
-                if self.world.grid[x][y].is_free:
-                    self.world.grid[x][y].set_corridor()
+                if self.bsd_grid[x][y].is_free:
+                    self.bsd_grid[x][y].set_corridor()
 
     def __connect_rooms(self):
         for i, _ in enumerate(self.leaves):

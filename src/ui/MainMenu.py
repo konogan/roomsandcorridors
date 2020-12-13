@@ -1,11 +1,6 @@
 # encoding: utf-8
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-class-docstring
-# pylint: disable=missing-function-docstring
-
-from  src.ui.Button import Button
-
 from src.Constants import MyColors
+from src.ui.Button import Button
 
 
 class MainMenu:
@@ -25,13 +20,13 @@ class MainMenu:
             save_exist:
         """
         if save_exist:
-            play_button = Button("load", self.surface, "re(l)oad world", -200)
+            play_button = Button("load", self.surface, "(l)oad world", -200)
             self.buttons.append(play_button)
 
         new_button = Button("new", self.surface, "(n)ew world", -140)
         self.buttons.append(new_button)
 
-        quit_button = Button("quit", self.surface, "save and (q)uit", -80)
+        quit_button = Button("quit", self.surface, "(q)uit", -80)
         self.buttons.append(quit_button)
 
     def render(self):

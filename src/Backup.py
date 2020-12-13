@@ -1,8 +1,10 @@
 # encoding: utf-8
 import os
 
-from src.world.Cell import Cell
+from src.actors.Player import Player
 from src.world.Room import Room
+from src.world.helper_grid import *
+
 
 class Backup:
     """Backup class handle the save en restore of the world"""
@@ -14,11 +16,19 @@ class Backup:
         """
         self.save_directory = "saves"
         self.save_name = save_name
+        self.grid_size = None
+        self.grid = None
+        self.rooms = []
+        self.player = None
 
         self.save_path = "{}/{}".format(self.save_directory, self.save_name)
-
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
+
+    def is_available(self):
+        return os.path.isfile("{}/topology.save".format(self.save_path)) and os.path.isfile(
+            "{}/items.save".format(self.save_path)) and os.path.isfile(
+            "{}/rooms.save".format(self.save_path)) and os.path.isfile("{}/player.save".format(self.save_path))
 
     def save(self, world):
         # save the world topology
@@ -35,21 +45,21 @@ class Backup:
         self.__save_player(world.player)
         # TODO save the player history ?
 
-    def load(self, world):
-        # rebuild the topology of the grid from the save
-        """
-        Args:
-            world:
-        """
-        self.__load_topology(world)
+    def load(self, grid_size=(0, 0)):
+        # rebuild the topology of the grid from the save of the cell and the room
+        self.grid_size = grid_size
+        self.__load_grid()
+        self.__load_rooms()
+        self.__load_player()
 
-        # repopulate the grid items
+    def get_grid(self):
+        return self.grid
 
-        # repopulate the rooms from the save and assign them to the grid
+    def get_rooms(self):
+        return self.rooms
 
-        # restore the player position ans inventory
-
-        pass
+    def get_player(self):
+        return self.player
 
     def __save_topology(self, world):
         # TODO save different level in different file
@@ -62,7 +72,7 @@ class Backup:
             for y in range(world.grid_size[1]):
                 row_str = ""
                 for x in range(world.grid_size[0]):
-                    row_str += world.grid[x][y].save_type
+                    row_str += str(world.grid[x][y].save_type)
                 row_str += "\n"
                 outfile.writelines(row_str)
         outfile.close()
@@ -93,12 +103,13 @@ class Backup:
         """
         with open("{}/items.save".format(self.save_path), 'w') as outfile:
             # save the world geography
-            item_str = "Items : "
-            for y in range(world.grid_size[1]):
-                for x in range(world.grid_size[0]):
+            item_str = ""
+
+            for x in range(world.grid_size[0]):
+                for y in range(world.grid_size[1]):
                     if len(world.grid[x][y].items) > 0:
                         for _, item in enumerate(world.grid[x][y].items):
-                            item_str += "{},{}-{}|".format(
+                            item_str += "{},{},{}|".format(
                                 str(x),
                                 str(y),
                                 str(item)
@@ -113,9 +124,13 @@ class Backup:
             player: player instance
         """
         with open("{}/player.save".format(self.save_path), 'w') as outfile:
+
+            # save player coordinate
             player_str = "Position :{},{},{}\n".format(
-                str(player.coord.x), str(player.coord.y), str(player.orientation))
+                str(player.coord.x), str(player.coord.y), str(player.current_room))
             outfile.writelines(player_str)
+
+            # save inventory
             inventory_str = "Inventory :"
             for index, _ in enumerate(player.inventory.items):
                 inventory_str += "{}:{}|".format(
@@ -124,25 +139,25 @@ class Backup:
                 )
             inventory_str += "\n"
             outfile.writelines(inventory_str)
+
             # TODO save equipment
 
         outfile.close()
 
-    def __load_topology(self, world):
-        """
-        Args:
-            world:
-        """
-        initial_grid = world.grid
+    def __load_grid(self) -> [[Cell]]:
+        new_grid = init_grid(self.grid_size)
         topology_file = open("{}/topology.save".format(self.save_path), 'r')
-        y = 0
+        coord_y = 0
         for line in topology_file:
-            for x, char in enumerate(line.strip()):
-                cell = Cell(x, y)
+            coord_x = 0
+            for _, char in enumerate(line):
+                cell = Cell(coord_x, coord_y)
                 if char == ".":
                     cell.set_floor()
                 elif char == "#":
                     cell.set_wall()
+                elif char == "c":
+                    cell.set_corridor()
                 elif char == "O":
                     cell.set_door()
                     cell.open()
@@ -151,29 +166,30 @@ class Backup:
                     cell.close()
                 else:
                     pass
-                initial_grid[x][y] = cell
-            y += 1
+                new_grid[coord_x][coord_y] = cell
+                coord_x += 1
+            coord_y += 1
         topology_file.close()
-        world.grid = initial_grid
+        self.grid = deepcopy(new_grid)
 
-    def __load_rooms(self, world):
-        """
-        Args:
-            world: world instance
-        """
+    def __load_rooms(self):
         room_file = open("{}/rooms.save".format(self.save_path), 'r')
         line = room_file.readline()
-        for room_save in line.split('|'):
-            #1:1,1,4,7 room_id:x,y,w,h
-            room=room_save.split(':')
-            coord= room[1].split(',')
-            newroom = Room(coord[0], coord[1], coord[2], coord[3], room[0])
-            
-            for coord_x in range(room.coord.x, room.coord.x + room.width):
-                for coord_y in range(room.coord.y, room.coord.y + room.height):
-                    world.grid[coord_x][coord_y].belong_to_room(newroom.room_id)
 
-            world.rooms.append(newroom)
+        self.rooms = []
+
+        for room_save in line.rstrip('|\n').split('|'):
+            room = room_save.split(':')
+            coord = room[1].split(',')
+            room_new = Room(int(coord[0]), int(coord[1]), int(
+                coord[2]), int(coord[3]), int(room[0]))
+
+            for coord_x in range(room_new.coord.x, room_new.coord.x + room_new.width):
+                for coord_y in range(room_new.coord.y, room_new.coord.y + room_new.height):
+                    self.grid[coord_x][coord_y].belong_to_room(
+                        room_new.room_id)
+
+            self.rooms.append(room_new)
         room_file.close()
 
     def __load_items(self, world):
@@ -183,9 +199,14 @@ class Backup:
         """
         pass
 
-    def __load_player(self, world):
-        """
-        Args:
-            world:
-        """
-        pass
+    def __load_player(self):
+        player_file = open("{}/player.save".format(self.save_path), 'r')
+        player_line = player_file.readline().split(":")[1].split(',')
+        # inventory = player_file.readline().split(":").pop(0)
+        player_file.close()
+
+        saved_player = Player(
+            int(player_line[0]),
+            int(player_line[1]),
+            int(player_line[2]))
+        self.player = saved_player

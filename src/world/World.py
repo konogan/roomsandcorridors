@@ -1,61 +1,57 @@
 # encoding: utf-8
 
+import pygame
+
+from src.Backup import Backup
 from src.Constants import Coord, Direction
 from src.actors.Player import Player
+from src.generators.Bsd import Bsd
 from src.items.Item import PickableItem
-from src.world.Utils import *
+from src.world.helper_grid import *
+
 
 class World:
 
-    def __init__(self, settings, messages, surface, inventory_surface, camera):
-        """
-        Args:
-            settings:
-            messages:
-            surface:
-            inventory_surface:
-            camera:
-        """
-        self.surface = surface
+    def __init__(self, settings, messages, game_surface, inventory_surface, camera):
+        self.game_surface = game_surface
+        self.game_surface_rect = game_surface.get_rect()
         self.inventory_surface = inventory_surface
+
         self.messages = messages
         self.settings = settings
-        self.surface_rect = surface.get_rect()
         self.grid_size = (self.settings.grid_width, self.settings.grid_height)
         self.grid = None
         self.rooms = []
         self.player = None
         self.camera = camera
+
         self.debug = False
         self.mouse = Coord(0, 0)
-        self.new()
 
     def new(self):
-        # empty elements
-        self.grid = None
-        self.rooms = []
+        # initialize the one level grid and associated rooms
+        generator = Bsd(self.grid_size, 12)
+        generator.run()
 
-        # initialize the one level grid
-        self.grid = make_grid(self.grid_size)
+        # update the grid with the generator grid version
+        self.grid = generator.get_grid()
+        self.rooms = generator.get_rooms()
 
-        # initialize the rooms
-        randomize_rooms(self)
-
-        # place walls
-        build_walls(self)
-
-        # place doors
-        place_door(self)
-
-        # place items
-        place_items(self)
-
-        # place enemies
+        self.grid = grid_generate_walls(self.grid, self.grid_size)
+        self.grid = grid_generate_doors(self.grid, self.grid_size)
+        self.grid = grid_random_place_items(self.grid, self.grid_size)
 
         # init player
         spawn = self.rooms[0].get_center()
         self.player = Player(spawn[0], spawn[1], self.rooms[0].room_id)
-        self.camera.look_at(self.player.coord.x, self.player.coord.x)
+        # self.camera.look_at(self.player.coord.x, self.player.coord.x)
+
+    def load(self):
+        backup = Backup()
+        backup.load(self.grid_size)
+        self.grid = backup.get_grid()
+        self.rooms = backup.get_rooms()
+        self.player = backup.get_player()
 
     def player_open_door(self):
         # test 4 directions for a door and reverse his state
@@ -120,8 +116,7 @@ class World:
 
             # check the player position against the camera viewport
             # move the center look if necessary
-            self.camera.look_at(self.player.coord.x,
-                                self.player.coord.y)
+            # self.camera.look_at(self.player.coord.x,self.player.coord.y)
 
             if self.player.current_room != current_room:
                 if self.player.current_room == 0:
@@ -151,15 +146,6 @@ class World:
                         self.messages.add_message(
                             'You find a ' + str(item) + ', (p)ick it up')
 
-    def set_mouse(self, mouse_x: int, mouse_y: int):
-        """
-        Args:
-            mouse_x:
-            mouse_y:
-        """
-        self.mouse = Coord(int(mouse_x // self.settings.tile_size + self.camera.top_left_x),
-                           int(mouse_y // self.settings.tile_size + self.camera.top_left_y))
-
     def mouse_clicked(self):
         # inspect world at mouse coordinate
         print(self.grid[self.mouse.x][self.mouse.y])
@@ -175,25 +161,31 @@ class World:
         Args:
             current_turn:
         """
-        update_fov(self, current_turn, self.player.view_distance)
+        # update_fov(self, current_turn, self.player.view_distance)
 
-    def render_grid(self):
-        self.surface.fill((0, 0, 0))
-        offset = (self.camera.top_left_x, self.camera.top_left_y)
-        # iterate over all the cells covered by the camera
-        # and offset them
-        for coord_x in range(self.camera.top_left_x, self.camera.bottom_right_x + 1):
-            for coord_y in range(self.camera.top_left_y, self.camera.bottom_right_y + 1):
-                if self.grid[coord_x][coord_y]:
-                    self.grid[coord_x][coord_y].render(
-                        self.surface, self.settings.tile_size, offset, self.debug,
-                        self.mouse.x == coord_x and self.mouse.y == coord_y)
+    def render(self):
+        # render all the world on its own surface
+        # TODO clip this surface related to game surface display
+        world_size = (self.grid_size[0] * self.settings.tile_size,
+                      self.grid_size[1] * self.settings.tile_size)
+        local_surface = pygame.Surface(world_size)
 
-        # iterate over each room and render it
+        # render each tiles
+        for coord_x in range(self.grid_size[0]):
+            for coord_y in range(self.grid_size[1]):
+                cell_coord = (coord_x * self.settings.tile_size,
+                              coord_y * self.settings.tile_size)
+                cell_rect = pygame.Rect(cell_coord, (self.settings.tile_size, self.settings.tile_size))
+                cell_surface = self.grid[coord_x][coord_y].render(self.settings.tile_size, self.debug)
+                local_surface.blit(cell_surface, cell_rect)
+
+        # render each rooms
         if self.debug:
             for i, _ in enumerate(self.rooms):
-                self.rooms[i].render(
-                    self.surface, self.settings.tile_size, offset)
+                self.rooms[i].render(local_surface, self.settings.tile_size)
 
         # render the player
-        self.player.render(self.surface, self.settings.tile_size, offset)
+        self.player.render(local_surface, self.settings.tile_size)
+
+        # blit this surface on the game surface
+        self.game_surface.blit(local_surface, (0, 0))

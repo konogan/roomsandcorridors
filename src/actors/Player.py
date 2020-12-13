@@ -10,7 +10,7 @@ from src.actors.PlayerInventory import PlayerInventory
 
 
 class Player:
-    def __init__(self, coord_x, coord_y, room_id):
+    def __init__(self, coord_x: int, coord_y: int, room_id=1):
         """
         Args:
             coord_x:
@@ -64,31 +64,18 @@ class Player:
         """
         self.inventory.remove(item)
 
-    def render(self, world_surface, tile_size, offset=(0, 0)):
-        """
-        Args:
-            world_surface:
-            tile_size:
-            offset:
-        """
+    def render(self, world_surface: pygame.Surface, tile_size):
         angle = 0
-        local_rect = pygame.Rect(0, 0, tile_size, tile_size)
 
-        local_surface = pygame.Surface((tile_size, tile_size))
+        # local_rect = pygame.Rect((0, 0), tile_size)
+        local_surface = pygame.Surface((tile_size, tile_size), pygame.SRCALPHA)
 
-        world_rect = pygame.Rect(
-            (self.coord.x - offset[0]) * tile_size,
-            (self.coord.y - offset[1]) * tile_size,
-            tile_size,
-            tile_size
-        )
+        world_rect = pygame.Rect((self.coord.x * tile_size, self.coord.y * tile_size), (tile_size,tile_size))
 
-        pygame.draw.rect(local_surface, MyColors.WHITE.value, local_rect)
         pygame.draw.polygon(local_surface, MyColors.PLAYER.value, (
             (int(tile_size // 2), 0),
             (0, tile_size),
-            (tile_size, tile_size))
-                            )
+            (tile_size, tile_size)))
 
         if self.orientation == Direction.NORTH:
             angle = 0
