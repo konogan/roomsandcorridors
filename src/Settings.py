@@ -7,8 +7,8 @@ class Settings:
     screen_width = 1200
     screen_height = 800
     ui_width = 400
-    grid_width = 30
-    grid_height = 30
+    grid_width = 150
+    grid_height = 150
     tile_size = 24
     name = "Rooms & Corridors"
 

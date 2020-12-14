@@ -10,6 +10,8 @@ class States(Enum):
     MENU = 2  # on menu display
     PLAY = 3  # on in-game running
     INVENTORY = 4  # on in-game inventory management
+    PLAYER_TURN = 5
+    DUNGEON_TURN = 6
 
 
 class Direction(Enum):

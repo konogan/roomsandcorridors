@@ -19,6 +19,7 @@ class Backup:
         self.grid_size = None
         self.grid = None
         self.rooms = []
+        self.items = []
         self.player = None
 
         self.save_path = "{}/{}".format(self.save_directory, self.save_name)
@@ -49,7 +50,8 @@ class Backup:
         # rebuild the topology of the grid from the save of the cell and the room
         self.grid_size = grid_size
         self.__load_grid()
-        self.__load_rooms()
+        self.__load_rooms_and_add_in_the_room()
+        self.__load_items_on_the_grid()
         self.__load_player()
 
     def get_grid(self):
@@ -60,6 +62,9 @@ class Backup:
 
     def get_player(self):
         return self.player
+
+    def get_items(self):
+        return self.items
 
     def __save_topology(self, world):
         # TODO save different level in different file
@@ -124,7 +129,6 @@ class Backup:
             player: player instance
         """
         with open("{}/player.save".format(self.save_path), 'w') as outfile:
-
             # save player coordinate
             player_str = "Position :{},{},{}\n".format(
                 str(player.coord.x), str(player.coord.y), str(player.current_room))
@@ -133,7 +137,7 @@ class Backup:
             # save inventory
             inventory_str = "Inventory :"
             for index, _ in enumerate(player.inventory.items):
-                inventory_str += "{}:{}|".format(
+                inventory_str += "{},{}|".format(
                     str(player.inventory.items[index]),
                     str(player.inventory.quantities[index])
                 )
@@ -172,7 +176,7 @@ class Backup:
         topology_file.close()
         self.grid = deepcopy(new_grid)
 
-    def __load_rooms(self):
+    def __load_rooms_and_add_in_the_room(self):
         room_file = open("{}/rooms.save".format(self.save_path), 'r')
         line = room_file.readline()
 
@@ -192,21 +196,43 @@ class Backup:
             self.rooms.append(room_new)
         room_file.close()
 
-    def __load_items(self, world):
-        """
-        Args:
-            world:
-        """
-        pass
+    def __load_items_on_the_grid(self):
+        item_file = open("{}/items.save".format(self.save_path), 'r')
+        line = item_file.readline()
+        item_file.close()
+
+        for item_save in line.rstrip('|\n').split('|'):
+            details = item_save.split(',')
+            coord_x = int(details[0])
+            coord_y = int(details[1])
+            item_class = globals()[details[2]]
+            my_item = item_class()
+            self.grid[coord_x][coord_y].append_item(my_item)
+
 
     def __load_player(self):
+        # load the player save file
         player_file = open("{}/player.save".format(self.save_path), 'r')
         player_line = player_file.readline().split(":")[1].split(',')
-        # inventory = player_file.readline().split(":").pop(0)
+        inventory_line = player_file.readline().rstrip('|\n').split(":").pop(1).split("|")
         player_file.close()
 
+        # initialize the player
         saved_player = Player(
             int(player_line[0]),
             int(player_line[1]),
             int(player_line[2]))
+
+        # populate is inventory
+        for inventory_item in inventory_line:
+            details = inventory_item.split(',')
+            item_class = globals()[details[0]]
+            number_of_type = int(details[1])
+            my_item = item_class()
+            for _ in range(number_of_type):
+                saved_player.pick_item(my_item)
+
+        # save it on backup
         self.player = saved_player
+
+
